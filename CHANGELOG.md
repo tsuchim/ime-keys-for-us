@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1
+
+- Published locally Authenticode-signed distribution artifacts.
+- Documented that the signing certificate is a personal `CN=tsuchim` code-signing certificate, not a public CA-trusted certificate.
+- Added GitHub funding metadata.
+
 ## 0.1.0
 
 - Added native Win32 application skeleton.
