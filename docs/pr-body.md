@@ -17,6 +17,7 @@ Build initial native Win32 implementation of IME Keys for US v0.1.0.
 - CMake project targeting C++17.
 - Visual Studio 2022 x64 Release build verified locally.
 - Output: `build\Release\ime-keys-for-us.exe`.
+- PR CI smoke-tests startup registration and MSI install/uninstall.
 
 ## Signing
 

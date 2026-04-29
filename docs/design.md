@@ -95,6 +95,7 @@ Out of scope for v0.1.0:
 - Settings UI.
 - Long-press standalone Alt fallback.
 - TSF.
+- GitHub-hosted CI keyboard, IME, tray-click, and UIAccess integration tests.
 - Updater.
 - Telemetry.
 - Store/MSIX distribution.

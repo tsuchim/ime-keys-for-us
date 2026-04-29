@@ -32,6 +32,36 @@ jobs:
           name: ime-keys-for-us-unsigned-x64
           path: build/**/Release/ime-keys-for-us.exe
 
+      - name: Smoke test startup registration
+        shell: pwsh
+        run: |
+          $runPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
+          $exe = Get-ChildItem build -Recurse -Filter ime-keys-for-us.exe | Select-Object -First 1
+          if (-not $exe) {
+            throw "Executable not found."
+          }
+
+          try {
+            & $exe.FullName --disable-startup
+            if (Get-ItemProperty -Path $runPath -Name ImeKeysForUS -ErrorAction SilentlyContinue) {
+              throw "Startup Run value should not exist after --disable-startup."
+            }
+
+            & $exe.FullName --enable-startup
+            $value = (Get-ItemProperty -Path $runPath -Name ImeKeysForUS -ErrorAction Stop).ImeKeysForUS
+            if ($value -notmatch '^".*ime-keys-for-us\.exe" --startup$') {
+              throw "Unexpected startup Run value: $value"
+            }
+
+            & $exe.FullName --disable-startup
+            if (Get-ItemProperty -Path $runPath -Name ImeKeysForUS -ErrorAction SilentlyContinue) {
+              throw "Startup Run value should be removed after --disable-startup."
+            }
+          }
+          finally {
+            & $exe.FullName --disable-startup
+          }
+
       - name: Install WiX
         run: dotnet tool install --global wix --version 4.0.6
 
@@ -43,6 +73,33 @@ jobs:
             throw "Executable not found."
           }
           wix build installer/wix/Product.wxs -d SourceDir=$($exe.Directory.FullName) -o "IME-Keys-for-US-$env:PROJECT_VERSION-x64-unsigned.msi"
+
+      - name: Smoke test installer
+        shell: pwsh
+        run: |
+          $runPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Run"
+          $msi = Get-ChildItem -Filter "IME-Keys-for-US-*-x64-unsigned.msi" | Select-Object -First 1
+          if (-not $msi) {
+            throw "MSI not found."
+          }
+
+          $installedExe = "C:\Program Files\ImeKeysForUS\ime-keys-for-us.exe"
+          try {
+            Start-Process msiexec.exe -Wait -ArgumentList @("/i", $msi.FullName, "/qn", "/norestart")
+            if (-not (Test-Path $installedExe)) {
+              throw "Installed executable was not found at $installedExe."
+            }
+            if (Get-ItemProperty -Path $runPath -Name ImeKeysForUS -ErrorAction SilentlyContinue) {
+              throw "MSI install should not create the current-user startup Run value."
+            }
+          }
+          finally {
+            Start-Process msiexec.exe -Wait -ArgumentList @("/x", $msi.FullName, "/qn", "/norestart")
+          }
+
+          if (Test-Path $installedExe) {
+            throw "Installed executable still exists after MSI uninstall."
+          }
 
       - name: Upload installer if built
         uses: actions/upload-artifact@v4
