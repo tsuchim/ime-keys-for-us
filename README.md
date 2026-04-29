@@ -35,10 +35,10 @@ Format:
 
 ```ini
 [Keyboard]
-DoubleTapMs=200
+DoubleTapMs=100
 ```
 
-The default is `200 ms`. Valid values are clamped to `100-500 ms`. Shorter values reduce IME switching delay; longer values make double-tap easier. Restart the app after editing settings in v0.1.0.
+The default is `100 ms`. Valid values are clamped to `100-500 ms`. Shorter values reduce IME switching delay; longer values make double-tap easier. Restart the app after editing settings in v0.1.0.
 
 ## Installation Status
 

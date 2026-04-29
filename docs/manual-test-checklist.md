@@ -35,9 +35,9 @@
 
 ## Settings
 
-- [ ] No settings file uses default `200`.
-- [ ] Missing `DoubleTapMs` uses default `200`.
-- [ ] Invalid `DoubleTapMs` uses default `200`.
+- [ ] No settings file uses default `100`.
+- [ ] Missing `DoubleTapMs` uses default `100`.
+- [ ] Invalid `DoubleTapMs` uses default `100`.
 - [ ] `DoubleTapMs=100` works.
 - [ ] `DoubleTapMs=500` works.
 - [ ] Values below `100` clamp to `100`.

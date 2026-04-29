@@ -87,7 +87,7 @@ CMake project と Win32 source layout を作成した。
 定数:
 
 ```cpp
-constexpr DWORD DEFAULT_ALT_DOUBLE_TAP_MS = 200;
+constexpr DWORD DEFAULT_ALT_DOUBLE_TAP_MS = 100;
 constexpr DWORD MIN_ALT_DOUBLE_TAP_MS = 100;
 constexpr DWORD MAX_ALT_DOUBLE_TAP_MS = 500;
 ```
@@ -307,7 +307,7 @@ Applied changes:
 - Removed long-press state handling.
 - Added `src/settings.h` and `src/settings.cpp`.
 - Added `AppSettings` and startup loading from `%APPDATA%\ImeKeysForUS\settings.ini`.
-- Added `DEFAULT_ALT_DOUBLE_TAP_MS = 200`.
+- Changed `DEFAULT_ALT_DOUBLE_TAP_MS` to `100`.
 - Added accepted setting clamp range `100-500 ms`.
 - Changed timer handling so the app arms a timer only while a pending tap exists.
 - Changed `DoubleTapMs` parsing to accept only strict numeric values; invalid values use the default.

@@ -75,5 +75,5 @@ class KeyboardHook {
   HWND notify_window_ = nullptr;
   Gesture gesture_;
   PendingTap pending_tap_;
-  DWORD double_tap_timeout_ms_ = 200;
+  DWORD double_tap_timeout_ms_ = 100;
 };

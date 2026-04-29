@@ -2,7 +2,7 @@
 
 #include <windows.h>
 
-constexpr DWORD DEFAULT_ALT_DOUBLE_TAP_MS = 200;
+constexpr DWORD DEFAULT_ALT_DOUBLE_TAP_MS = 100;
 constexpr DWORD MIN_ALT_DOUBLE_TAP_MS = 100;
 constexpr DWORD MAX_ALT_DOUBLE_TAP_MS = 500;
 
@@ -11,4 +11,3 @@ struct AppSettings {
 };
 
 AppSettings LoadSettings();
-

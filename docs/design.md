@@ -47,10 +47,10 @@ Settings are loaded once at startup from:
 
 ```ini
 [Keyboard]
-DoubleTapMs=200
+DoubleTapMs=100
 ```
 
-The default is `200 ms`, clamped to `100-500 ms`. Restart is required after editing settings in v0.1.0.
+The default is `100 ms`, clamped to `100-500 ms`. Restart is required after editing settings in v0.1.0.
 
 ## Startup Order
 

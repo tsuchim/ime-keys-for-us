@@ -99,7 +99,7 @@ Long-press fallback was removed before merge because it can accidentally emit st
 Default:
 
 ```cpp
-DEFAULT_ALT_DOUBLE_TAP_MS = 200
+DEFAULT_ALT_DOUBLE_TAP_MS = 100
 ```
 
 The timeout is configurable without recompiling:
@@ -110,7 +110,7 @@ The timeout is configurable without recompiling:
 
 ```ini
 [Keyboard]
-DoubleTapMs=200
+DoubleTapMs=100
 ```
 
 Accepted values are clamped to `100-500 ms`. Restart is required after editing settings in v0.1.0.

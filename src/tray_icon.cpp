@@ -43,7 +43,9 @@ void TrayIcon::Remove() {
 }
 
 void TrayIcon::HandleMessage(HWND hwnd, LPARAM lparam) {
-  if (lparam == WM_CONTEXTMENU || lparam == WM_RBUTTONUP) {
+  UINT message = LOWORD(lparam);
+  if (message == WM_CONTEXTMENU || message == WM_RBUTTONUP ||
+      lparam == WM_CONTEXTMENU || lparam == WM_RBUTTONUP) {
     ShowMenu(hwnd);
   }
 }
