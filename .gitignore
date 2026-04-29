@@ -1,0 +1,23 @@
+# Build output
+build/
+build-*/
+out/
+dist/
+
+# Visual Studio / CMake user files
+.vs/
+*.user
+*.suo
+*.VC.db
+*.VC.VC.opendb
+CMakeUserPresets.json
+
+# Local artifacts
+*.exe
+*.msi
+*.zip
+*.pfx
+*.cer
+*.crt
+*.key
+

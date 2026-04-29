@@ -1,0 +1,42 @@
+# IME Keys for US v0.1.0 Task
+
+このファイルは、初期実装時の要求をいつでも確認できるようにするための作業指示です。
+
+## 目的
+
+`IME Keys for US` は、日本語ユーザーが US キーボード上で明示的な IME OFF / IME ON キーを使えるようにする、狭いスコープのネイティブ Windows アプリケーションです。
+
+左 Alt 単独タップを IME OFF、右 Alt 単独タップを IME ON として扱います。IME トグルは主要動作として実装しません。
+
+## v0.1.0 の必須動作
+
+| Input | Behavior |
+|---|---|
+| Left Alt tap | IME OFF |
+| Right Alt tap | IME ON |
+| Left Alt + another key | Normal Left Alt shortcut |
+| Right Alt + another key | Normal Right Alt shortcut |
+| Left Alt long press | Standalone Left Alt |
+| Right Alt long press | Standalone Right Alt |
+| Right Alt held, then Left Alt | Standalone Left Alt |
+| Left Alt held, then Right Alt | Standalone Right Alt |
+
+## 実装制約
+
+- C++17 以降、Win32 API、CMake を使う。
+- AutoHotkey、.NET、Electron、WebView、ネットワーク、テレメトリ、アップデータは使わない。
+- `WH_KEYBOARD_LL` を使い、フック callback は軽量に保つ。
+- `SendInput` は抑止した Alt 入力の再送にだけ使う。
+- IME 制御は `src/ime_controller.*` に隔離する。
+- TSF は v0.1.0 では実装しない。
+- double-tap は v0.1.0 では実装しない。
+- 署名素材、証明書、秘密鍵、PFX、パスワードは commit しない。
+
+## リリース作業
+
+- 初期バージョンは `0.1.0`。
+- 開発ブランチは `devel`、PR 先は `main`。
+- PR タイトルは `Build initial IME Keys for US v0.1.0`。
+- GitHub Release はレビュー後に `v0.1.0` tag から作成する。
+- winget manifest は GitHub Release URL と SHA256 が確定してから完成させる。
+
