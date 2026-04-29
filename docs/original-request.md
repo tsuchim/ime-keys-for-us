@@ -1,6 +1,6 @@
 # Original Request
 
-このファイルは、初回開発依頼の要求を後から確認できるように整理した記録です。
+このファイルは、初回開発依頼の要求と、その後に受け入れた仕様変更を後から確認できるように整理した記録です。
 
 ## Repository Identity
 
@@ -21,8 +21,8 @@ Japanese users on US keyboards need explicit IME ON and IME OFF keys, not an IME
 
 The product is a clean native Windows replacement for AutoHotkey-based Alt IME utilities. It maps physically thumb-accessible Alt keys on US keyboards to explicit Japanese IME state:
 
-- Left Alt tap: IME OFF / English
-- Right Alt tap: IME ON / Japanese
+- Left Alt single tap: IME OFF / English after the double-tap timeout
+- Right Alt single tap: IME ON / Japanese after the double-tap timeout
 
 The app must remain narrow in scope and must not become a general hotkey manager.
 
@@ -55,12 +55,12 @@ Do not translate AutoHotkey IME helper functions into C++ line-by-line.
 
 | Input | Behavior |
 |---|---|
-| Left Alt tap | IME OFF |
-| Right Alt tap | IME ON |
+| Left Alt single tap | IME OFF after double-tap timeout |
+| Right Alt single tap | IME ON after double-tap timeout |
+| Left Alt double tap | Standalone Left Alt |
+| Right Alt double tap | Standalone Right Alt |
 | Left Alt + another key | Normal Left Alt shortcut |
 | Right Alt + another key | Normal Right Alt shortcut |
-| Left Alt long press | Standalone Left Alt |
-| Right Alt long press | Standalone Right Alt |
 | Right Alt held, then Left Alt | Standalone Left Alt |
 | Left Alt held, then Right Alt | Standalone Right Alt |
 
@@ -74,7 +74,7 @@ Normal Alt shortcuts that must keep working:
 - Alt+Right
 - Alt+underlined menu key
 
-Double-tap behavior is explicitly out of scope for v0.1.0.
+Long-press fallback was removed before merge because it can accidentally emit standalone Alt while the user is pausing before an intended `Alt+key` shortcut.
 
 ## Implementation Requirements
 
@@ -94,16 +94,26 @@ Double-tap behavior is explicitly out of scope for v0.1.0.
 - Include a single-instance guard.
 - Keep the keyboard hook callback fast.
 
-## Timing Constants
+## Double-tap Timeout
 
-Define these constants in one obvious location:
+Default:
 
 ```cpp
-ALT_LONG_PRESS_MS = 300
-ALT_TAP_MAX_MS = 250
+DEFAULT_ALT_DOUBLE_TAP_MS = 200
 ```
 
-`ALT_TAP_MAX_MS` may be used for classification and documentation, but v0.1.0 must not implement double-tap behavior.
+The timeout is configurable without recompiling:
+
+```text
+%APPDATA%\ImeKeysForUS\settings.ini
+```
+
+```ini
+[Keyboard]
+DoubleTapMs=200
+```
+
+Accepted values are clamped to `100-500 ms`. Restart is required after editing settings in v0.1.0.
 
 ## IME Control
 
@@ -187,9 +197,9 @@ winget submission is prepared but must not be submitted automatically in v0.1.0.
 - Tray icon and Exit menu exist.
 - Single-instance guard exists.
 - Normal Alt shortcuts are preserved by design.
-- Long press fallback exists.
+- Double-tap fallback exists.
 - Cross Alt fallback exists.
-- Double-tap is not implemented.
+- Long-press fallback is not implemented.
 - Installer exists or installer work is clearly documented with build steps.
 - GitHub Actions PR build exists.
 - Release workflow exists.
@@ -198,4 +208,3 @@ winget submission is prepared but must not be submitted automatically in v0.1.0.
 - winget preparation docs and manifest template exist.
 - Manual test checklist exists.
 - PR from `devel` to `main` is opened.
-

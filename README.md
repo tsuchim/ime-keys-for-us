@@ -2,7 +2,7 @@
 
 IME Keys for US is a small native Windows utility for Japanese users on US keyboards.
 
-It maps standalone left and right Alt taps to explicit IME OFF and IME ON operations. This avoids IME toggle behavior, which can be hard to reason about when switching between Word, browsers, VS Code, terminals, and other apps.
+It maps left and right Alt taps to explicit IME OFF and IME ON operations after a short double-tap timeout. This avoids IME toggle behavior, which can be hard to reason about when switching between Word, browsers, VS Code, terminals, and other apps.
 
 This project is licensed under the MIT License.
 
@@ -12,14 +12,31 @@ This project is a clean native implementation and does not include AutoHotkey or
 
 | Input | Behavior |
 |---|---|
-| Left Alt tap | IME OFF |
-| Right Alt tap | IME ON |
+| Left Alt single tap | IME OFF after double-tap timeout |
+| Right Alt single tap | IME ON after double-tap timeout |
+| Left Alt double tap | Standalone Left Alt |
+| Right Alt double tap | Standalone Right Alt |
 | Left Alt + another key | Normal Left Alt shortcut |
 | Right Alt + another key | Normal Right Alt shortcut |
-| Left Alt long press | Standalone Left Alt |
-| Right Alt long press | Standalone Right Alt |
 | Right Alt held, then Left Alt | Standalone Left Alt |
 | Left Alt held, then Right Alt | Standalone Right Alt |
+
+## Settings
+
+The double-tap timeout is loaded at startup from:
+
+```text
+%APPDATA%\ImeKeysForUS\settings.ini
+```
+
+Format:
+
+```ini
+[Keyboard]
+DoubleTapMs=200
+```
+
+The default is `200 ms`. Valid values are clamped to `100-500 ms`. Shorter values reduce IME switching delay; longer values make double-tap easier. Restart the app after editing settings in v0.1.0.
 
 ## Installation Status
 
@@ -97,7 +114,6 @@ Running the app itself as administrator is not the preferred long-term design. U
 - Right Alt may behave differently on layouts that treat it as AltGr.
 - AX keyboard layouts may need separate handling in a future release.
 - No settings UI yet.
-- No double-tap behavior yet.
 
 ## Manual Testing
 
@@ -106,4 +122,3 @@ See [docs/manual-test-checklist.md](docs/manual-test-checklist.md).
 ## License
 
 MIT License. See [LICENSE](LICENSE).
-

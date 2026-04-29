@@ -18,12 +18,12 @@
 
 | Input | Behavior |
 |---|---|
-| Left Alt tap | IME OFF |
-| Right Alt tap | IME ON |
+| Left Alt single tap | IME OFF after double-tap timeout |
+| Right Alt single tap | IME ON after double-tap timeout |
+| Left Alt double tap | Standalone Left Alt |
+| Right Alt double tap | Standalone Right Alt |
 | Left Alt + another key | Normal Left Alt shortcut |
 | Right Alt + another key | Normal Right Alt shortcut |
-| Left Alt long press | Standalone Left Alt |
-| Right Alt long press | Standalone Right Alt |
 | Right Alt held, then Left Alt | Standalone Left Alt |
 | Left Alt held, then Right Alt | Standalone Right Alt |
 
@@ -35,7 +35,7 @@
 - `SendInput` は抑止した Alt 入力の再送にだけ使う。
 - IME 制御は `src/ime_controller.*` に隔離する。
 - TSF は v0.1.0 では実装しない。
-- double-tap は v0.1.0 では実装しない。
+- standalone Alt fallback は double-tap と cross Alt で提供する。
 - 署名素材、証明書、秘密鍵、PFX、パスワードは commit しない。
 
 ## リリース作業

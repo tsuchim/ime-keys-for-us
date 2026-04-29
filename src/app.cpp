@@ -7,7 +7,7 @@
 
 namespace {
 constexpr wchar_t kWindowClassName[] = L"ImeKeysForUS.HiddenWindow";
-constexpr UINT_PTR kLongPressTimerId = 1;
+constexpr UINT_PTR kKeyboardTimerId = 1;
 constexpr UINT kTimerIntervalMs = 20;
 }  // namespace
 
@@ -16,7 +16,7 @@ App::App(HINSTANCE instance) : instance_(instance), tray_icon_(instance) {}
 App::~App() {
   keyboard_hook_.Uninstall();
   if (hwnd_ != nullptr) {
-    KillTimer(hwnd_, kLongPressTimerId);
+    KillTimer(hwnd_, kKeyboardTimerId);
   }
   tray_icon_.Remove();
 }
@@ -38,11 +38,14 @@ bool App::Initialize() {
     return false;
   }
 
+  settings_ = LoadSettings();
+  keyboard_hook_.SetDoubleTapTimeout(settings_.alt_double_tap_ms);
+
   if (!keyboard_hook_.Install(hwnd_)) {
     return false;
   }
 
-  SetTimer(hwnd_, kLongPressTimerId, kTimerIntervalMs, nullptr);
+  SetTimer(hwnd_, kKeyboardTimerId, kTimerIntervalMs, nullptr);
   tray_icon_.Add(hwnd_);
   return true;
 }
@@ -91,8 +94,8 @@ LRESULT App::HandleMessage(HWND hwnd, UINT message, WPARAM wparam,
 
   switch (message) {
     case WM_TIMER:
-      if (wparam == kLongPressTimerId) {
-        keyboard_hook_.TickLongPress();
+      if (wparam == kKeyboardTimerId) {
+        keyboard_hook_.TickPendingTap();
       }
       return 0;
     case WM_COMMAND:

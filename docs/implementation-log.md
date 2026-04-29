@@ -59,7 +59,7 @@ CMake project と Win32 source layout を作成した。
 - standard Win32 message loop。
 - tray icon の登録。
 - Exit menu command の処理。
-- long press 判定用 timer。
+- keyboard timer。
 - keyboard hook の install/uninstall。
 
 ## 5. Keyboard Hook State Machine Was Implemented
@@ -69,28 +69,30 @@ CMake project と Win32 source layout を作成した。
 実装した状態:
 
 - `Idle`
-- `Undecided`
+- `AltDownHeld`
+- `PendingTap`
 - `NormalShortcut`
-- `StandaloneFallback`
 - `CrossFallback`
 
 実装した動作:
 
 - Left Alt down / Right Alt down は最初に suppress する。
-- Alt tap のまま key up した場合、Left Alt は IME OFF、Right Alt は IME ON。
+- Alt tap のまま key up した場合、pending tap として double-tap timeout を待つ。
 - Alt を押したまま non-Alt key が押された場合、suppressed Alt down を `SendInput` で replay し、通常 shortcut として通す。
-- long press threshold に到達した場合、standalone Alt down/up を `SendInput` で送る。
+- double-tap timeout 以内に同じ Alt をもう一度 tap した場合、standalone Alt down/up を `SendInput` で送る。
+- pending tap が timeout した場合、Left Alt は IME OFF、Right Alt は IME ON を request する。
 - opposite Alt が押された場合、second Alt に対応する standalone Alt を送る。
 - synthetic input は `dwExtraInfo` marker で識別し、hook recursion を防ぐ。
 
 定数:
 
 ```cpp
-constexpr DWORD ALT_LONG_PRESS_MS = 300;
-constexpr DWORD ALT_TAP_MAX_MS = 250;
+constexpr DWORD DEFAULT_ALT_DOUBLE_TAP_MS = 200;
+constexpr DWORD MIN_ALT_DOUBLE_TAP_MS = 100;
+constexpr DWORD MAX_ALT_DOUBLE_TAP_MS = 500;
 ```
 
-`ALT_TAP_MAX_MS` は文書化と将来拡張用で、v0.1.0 では double-tap を実装していない。
+`DoubleTapMs` は `%APPDATA%\ImeKeysForUS\settings.ini` から起動時に読み込む。
 
 ## 6. IME Control Was Isolated
 
@@ -264,7 +266,7 @@ Applied fixes:
 - Changed `KeyboardHook` so Alt tap classification posts a custom message to the hidden app window.
 - Changed `App::HandleMessage()` so it calls `ImeController::SetOpenStatus()` from the normal message loop.
 - Made tray icon creation non-fatal.
-- Changed startup order to create the hidden window, install the keyboard hook, start the long-press timer, then add the tray icon.
+- Changed startup order to create the hidden window, install the keyboard hook, start the keyboard timer, then add the tray icon.
 - Removed unused `synthetic_alt_down_sent` state.
 - Removed default HKCU Run startup registration from the per-machine MSI.
 - Updated installer documentation to describe manual startup options.
@@ -286,11 +288,39 @@ Copilot review comments on PR #1 were handled as follows:
 - Already handled and kept: release workflow artifact names derive from the Git tag.
 - Accepted: PR workflow MSI artifact name derives from `CMakeLists.txt`.
 
-Behavior intentionally unchanged:
+Behavior after review fixes:
 
-- Left Alt tap = IME OFF.
-- Right Alt tap = IME ON.
+- Left Alt single tap = IME OFF after timeout.
+- Right Alt single tap = IME ON after timeout.
 - Alt + another key = normal Alt shortcut.
-- Long press Alt = standalone Alt fallback.
+- Double-tap Alt = standalone Alt fallback.
 - Cross Alt = standalone Alt fallback.
-- Double-tap remains unimplemented.
+
+## 17. Double-tap Fallback Replaced Long-press
+
+GHQ rejected the long-press fallback because a user can hold Alt briefly while deciding the next shortcut key. If the app emits standalone Alt during that pause, an intended `Alt+key` shortcut can accidentally become menu activation.
+
+Applied changes:
+
+- Removed `ALT_LONG_PRESS_MS`.
+- Removed `TickLongPress()`.
+- Removed long-press state handling.
+- Added `src/settings.h` and `src/settings.cpp`.
+- Added `AppSettings` and startup loading from `%APPDATA%\ImeKeysForUS\settings.ini`.
+- Added `DEFAULT_ALT_DOUBLE_TAP_MS = 200`.
+- Added accepted setting clamp range `100-500 ms`.
+- Changed first Alt tap to create a pending tap instead of immediately changing IME.
+- Changed timeout resolution to post the existing IME ON/OFF app messages.
+- Changed same-key double-tap within timeout to emit standalone Alt without changing IME state.
+- Kept cross Alt fallback.
+- Documented that an opposite Alt gesture cancels an existing pending tap and is treated independently.
+
+Behavior now:
+
+- Left Alt single tap = IME OFF after double-tap timeout.
+- Right Alt single tap = IME ON after double-tap timeout.
+- Left Alt double tap = standalone Left Alt.
+- Right Alt double tap = standalone Right Alt.
+- Alt + another key = normal Alt shortcut.
+- Cross Alt = standalone Alt fallback.
+- Holding Alt alone does not emit standalone Alt.

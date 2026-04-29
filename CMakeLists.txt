@@ -18,6 +18,8 @@ add_executable(ImeKeysForUS WIN32
   src/app.h
   src/keyboard_hook.cpp
   src/keyboard_hook.h
+  src/settings.cpp
+  src/settings.h
   src/ime_controller.cpp
   src/ime_controller.h
   src/tray_icon.cpp
@@ -43,6 +45,7 @@ target_compile_definitions(ImeKeysForUS PRIVATE
 target_link_libraries(ImeKeysForUS PRIVATE
   user32
   shell32
+  ole32
   imm32
 )
 

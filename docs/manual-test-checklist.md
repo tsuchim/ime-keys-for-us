@@ -19,22 +19,51 @@
 - [ ] Google Japanese Input if installed
 - [ ] ATOK if installed
 
-## Key Behavior
+## IME Single Tap
 
-- [ ] Left Alt tap sets IME OFF.
-- [ ] Right Alt tap sets IME ON.
+- [ ] Left Alt single tap waits briefly, then sets IME OFF.
+- [ ] Right Alt single tap waits briefly, then sets IME ON.
+- [ ] The delay uses `DoubleTapMs`.
+
+## Double Tap
+
+- [ ] Left Alt double tap emits standalone Left Alt.
+- [ ] Right Alt double tap emits standalone Right Alt.
+- [ ] Double tap does not change IME state.
+- [ ] Double tap timing follows `DoubleTapMs`.
+
+## Settings
+
+- [ ] No settings file uses default `200`.
+- [ ] Missing `DoubleTapMs` uses default `200`.
+- [ ] Invalid `DoubleTapMs` uses default `200`.
+- [ ] `DoubleTapMs=100` works.
+- [ ] `DoubleTapMs=500` works.
+- [ ] Values below `100` clamp to `100`.
+- [ ] Values above `500` clamp to `500`.
+- [ ] Restart is required after changing settings.
+
+## Normal Alt Shortcuts
+
 - [ ] Alt+F still opens menus.
 - [ ] Alt+Space still opens window menu.
 - [ ] Alt+Tab still works.
 - [ ] Alt+Left / Alt+Right still work in browser.
-- [ ] Long press Left Alt opens menu as standalone Alt.
-- [ ] Long press Right Alt behaves as configured.
+- [ ] Alt+Enter still works.
+- [ ] Alt+underlined menu accelerator still works.
+- [ ] Normal Alt shortcuts do not trigger IME switching.
+
+## Cross Alt
+
 - [ ] Right Alt held, then Left Alt emits standalone Left Alt.
 - [ ] Left Alt held, then Right Alt emits standalone Right Alt.
-- [ ] IME state does not change during normal Alt shortcuts.
-- [ ] IME state does not change during long-press fallback.
 - [ ] IME state does not change during cross Alt fallback.
 - [ ] Synthetic input does not recurse.
+
+## Removed Long Press
+
+- [ ] Holding Alt alone does not emit standalone Alt.
+- [ ] Holding Alt and then pressing another key still allows normal Alt+key shortcut behavior.
 
 ## Startup
 
@@ -50,4 +79,3 @@
 - [ ] Behavior over elevated apps.
 - [ ] Signed UIAccess build from Program Files.
 - [ ] Failure mode when unsigned or installed outside Program Files.
-

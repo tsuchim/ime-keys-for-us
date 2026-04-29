@@ -38,16 +38,13 @@ void KeyboardHook::Uninstall() {
   notify_window_ = nullptr;
 }
 
-void KeyboardHook::TickLongPress() {
-  if (gesture_.state != GestureState::Undecided ||
-      gesture_.key == AltKey::None) {
-    return;
-  }
+void KeyboardHook::SetDoubleTapTimeout(DWORD timeout_ms) {
+  double_tap_timeout_ms_ = timeout_ms;
+}
 
-  DWORD elapsed = GetTickCount() - gesture_.started_at;
-  if (elapsed >= ALT_LONG_PRESS_MS) {
-    EmitStandaloneAlt(gesture_.key);
-    gesture_.state = GestureState::StandaloneFallback;
+void KeyboardHook::TickPendingTap() {
+  if (gesture_.state == GestureState::Idle) {
+    ResolveExpiredPendingTap(GetTickCount());
   }
 }
 
@@ -87,34 +84,41 @@ LRESULT KeyboardHook::HandleKeyboardEvent(WPARAM wparam,
 
 bool KeyboardHook::HandleKeyDown(const KBDLLHOOKSTRUCT& event, AltKey key) {
   if (key == AltKey::None) {
-    if (gesture_.state == GestureState::Undecided &&
+    if (gesture_.state == GestureState::AltDownHeld &&
         gesture_.key != AltKey::None) {
+      ClearPendingTap();
       ReplayAltDown(gesture_.key);
       gesture_.state = GestureState::NormalShortcut;
     }
     return false;
   }
 
+  DWORD now = event.time != 0 ? event.time : GetTickCount();
+
   if (event.flags & LLKHF_UP) {
     return false;
   }
 
   if (gesture_.state == GestureState::Idle) {
-    BeginAltGesture(key, event.time != 0 ? event.time : GetTickCount());
+    if (HasPendingTap() && pending_tap_.key != key) {
+      ClearPendingTap();
+    }
+    ResolveExpiredPendingTap(now);
+    BeginAltGesture(key, now);
     MarkConsumeUp(key);
     return true;
   }
 
-  if (gesture_.state == GestureState::Undecided &&
+  if (gesture_.state == GestureState::AltDownHeld &&
       gesture_.key != AltKey::None && gesture_.key != key) {
+    ClearPendingTap();
     EmitStandaloneAlt(key);
     MarkConsumeUp(key);
     gesture_.state = GestureState::CrossFallback;
     return true;
   }
 
-  if (gesture_.state == GestureState::CrossFallback ||
-      gesture_.state == GestureState::StandaloneFallback) {
+  if (gesture_.state == GestureState::CrossFallback) {
     return true;
   }
 
@@ -126,8 +130,15 @@ bool KeyboardHook::HandleKeyUp(const KBDLLHOOKSTRUCT&, AltKey key) {
     return false;
   }
 
-  if (gesture_.state == GestureState::Undecided && gesture_.key == key) {
-    PostImeRequestForTap(key);
+  if (gesture_.state == GestureState::AltDownHeld && gesture_.key == key) {
+    DWORD now = GetTickCount();
+    if (IsPendingTapSameKeyWithinTimeout(key, now)) {
+      ClearPendingTap();
+      EmitStandaloneAlt(key);
+    } else {
+      ResolveExpiredPendingTap(now);
+      BeginPendingTap(key, now);
+    }
     ResetGesture();
     return true;
   }
@@ -137,8 +148,7 @@ bool KeyboardHook::HandleKeyUp(const KBDLLHOOKSTRUCT&, AltKey key) {
     return false;
   }
 
-  if (gesture_.state == GestureState::StandaloneFallback ||
-      gesture_.state == GestureState::CrossFallback) {
+  if (gesture_.state == GestureState::CrossFallback) {
     if (ShouldConsumeUp(key)) {
       ClearConsumeUp(key);
     }
@@ -156,11 +166,44 @@ void KeyboardHook::BeginAltGesture(AltKey key, DWORD timestamp) {
   gesture_ = {};
   gesture_.key = key;
   gesture_.started_at = timestamp;
-  gesture_.state = GestureState::Undecided;
+  gesture_.state = GestureState::AltDownHeld;
 }
 
 void KeyboardHook::ResetGesture() {
   gesture_ = {};
+}
+
+void KeyboardHook::BeginPendingTap(AltKey key, DWORD timestamp) {
+  pending_tap_.key = key;
+  pending_tap_.started_at = timestamp;
+}
+
+void KeyboardHook::ClearPendingTap() {
+  pending_tap_ = {};
+}
+
+void KeyboardHook::ResolveExpiredPendingTap(DWORD now) {
+  if (IsPendingTapExpired(now)) {
+    AltKey key = pending_tap_.key;
+    ClearPendingTap();
+    PostImeRequestForTap(key);
+  }
+}
+
+bool KeyboardHook::HasPendingTap() const {
+  return pending_tap_.key != AltKey::None;
+}
+
+bool KeyboardHook::IsPendingTapSameKeyWithinTimeout(AltKey key,
+                                                   DWORD now) const {
+  return pending_tap_.key == key && !IsPendingTapExpired(now);
+}
+
+bool KeyboardHook::IsPendingTapExpired(DWORD now) const {
+  if (!HasPendingTap()) {
+    return false;
+  }
+  return now - pending_tap_.started_at >= double_tap_timeout_ms_;
 }
 
 void KeyboardHook::ReplayAltDown(AltKey key) {

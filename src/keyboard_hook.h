@@ -2,9 +2,6 @@
 
 #include <windows.h>
 
-constexpr DWORD ALT_LONG_PRESS_MS = 300;
-constexpr DWORD ALT_TAP_MAX_MS = 250;
-
 class KeyboardHook {
  public:
   KeyboardHook();
@@ -12,7 +9,8 @@ class KeyboardHook {
 
   bool Install(HWND notify_window);
   void Uninstall();
-  void TickLongPress();
+  void SetDoubleTapTimeout(DWORD timeout_ms);
+  void TickPendingTap();
 
  private:
   enum class AltKey {
@@ -23,9 +21,8 @@ class KeyboardHook {
 
   enum class GestureState {
     Idle,
-    Undecided,
+    AltDownHeld,
     NormalShortcut,
-    StandaloneFallback,
     CrossFallback,
   };
 
@@ -37,6 +34,11 @@ class KeyboardHook {
     bool consume_right_up = false;
   };
 
+  struct PendingTap {
+    AltKey key = AltKey::None;
+    DWORD started_at = 0;
+  };
+
   static LRESULT CALLBACK HookProc(int code, WPARAM wparam, LPARAM lparam);
   static KeyboardHook* instance_;
 
@@ -46,6 +48,12 @@ class KeyboardHook {
 
   void BeginAltGesture(AltKey key, DWORD timestamp);
   void ResetGesture();
+  void BeginPendingTap(AltKey key, DWORD timestamp);
+  void ClearPendingTap();
+  void ResolveExpiredPendingTap(DWORD now);
+  bool HasPendingTap() const;
+  bool IsPendingTapSameKeyWithinTimeout(AltKey key, DWORD now) const;
+  bool IsPendingTapExpired(DWORD now) const;
   void ReplayAltDown(AltKey key);
   void ReplayAltUp(AltKey key);
   void EmitStandaloneAlt(AltKey key);
@@ -64,4 +72,6 @@ class KeyboardHook {
   HHOOK hook_ = nullptr;
   HWND notify_window_ = nullptr;
   Gesture gesture_;
+  PendingTap pending_tap_;
+  DWORD double_tap_timeout_ms_ = 200;
 };
