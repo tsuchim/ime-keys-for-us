@@ -13,6 +13,7 @@ set(IME_KEYS_SIGN_TIMESTAMP_URL "http://timestamp.digicert.com" CACHE STRING "RF
 
 add_executable(ImeKeysForUS WIN32
   src/main.cpp
+  src/app_messages.h
   src/app.cpp
   src/app.h
   src/keyboard_hook.cpp
@@ -77,4 +78,3 @@ if(IME_KEYS_SIGN_AFTER_BUILD)
 endif()
 
 install(TARGETS ImeKeysForUS RUNTIME DESTINATION .)
-

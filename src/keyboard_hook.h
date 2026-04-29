@@ -1,7 +1,5 @@
 #pragma once
 
-#include "ime_controller.h"
-
 #include <windows.h>
 
 constexpr DWORD ALT_LONG_PRESS_MS = 300;
@@ -12,7 +10,7 @@ class KeyboardHook {
   KeyboardHook();
   ~KeyboardHook();
 
-  bool Install();
+  bool Install(HWND notify_window);
   void Uninstall();
   void TickLongPress();
 
@@ -35,7 +33,6 @@ class KeyboardHook {
     AltKey key = AltKey::None;
     DWORD started_at = 0;
     GestureState state = GestureState::Idle;
-    bool synthetic_alt_down_sent = false;
     bool consume_left_up = false;
     bool consume_right_up = false;
   };
@@ -52,7 +49,7 @@ class KeyboardHook {
   void ReplayAltDown(AltKey key);
   void ReplayAltUp(AltKey key);
   void EmitStandaloneAlt(AltKey key);
-  void SetImeForTap(AltKey key);
+  void PostImeRequestForTap(AltKey key);
   void MarkConsumeUp(AltKey key);
   void ClearConsumeUp(AltKey key);
   bool ShouldConsumeUp(AltKey key) const;
@@ -66,6 +63,6 @@ class KeyboardHook {
   static WORD VkForAlt(AltKey key);
 
   HHOOK hook_ = nullptr;
+  HWND notify_window_ = nullptr;
   Gesture gesture_;
-  ImeController ime_controller_;
 };

@@ -22,25 +22,32 @@ jobs:
       - name: Build
         run: cmake --build build --config Release
 
+      - name: Resolve version
+        shell: pwsh
+        run: |
+          $version = "${{ github.ref_name }}"
+          if ($version.StartsWith("v")) {
+            $version = $version.Substring(1)
+          }
+          "RELEASE_VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
+
       - name: Stage executable zip
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force dist | Out-Null
           $exe = Get-ChildItem build -Recurse -Filter ime-keys-for-us.exe | Select-Object -First 1
           Copy-Item $exe.FullName dist/ime-keys-for-us.exe
-          Compress-Archive -Path dist/ime-keys-for-us.exe -DestinationPath dist/ime-keys-for-us-0.1.0-x64-unsigned.zip -Force
-          Get-FileHash dist/ime-keys-for-us-0.1.0-x64-unsigned.zip -Algorithm SHA256 | Format-List | Out-File dist/SHA256SUMS.txt
+          Compress-Archive -Path dist/ime-keys-for-us.exe -DestinationPath "dist/ime-keys-for-us-$env:RELEASE_VERSION-x64-unsigned.zip" -Force
+          Get-FileHash "dist/ime-keys-for-us-$env:RELEASE_VERSION-x64-unsigned.zip" -Algorithm SHA256 | Format-List | Out-File dist/SHA256SUMS.txt
 
-      - name: Try building installer when WiX is available
+      - name: Install WiX
+        run: dotnet tool install --global wix --version 4.0.6
+
+      - name: Build installer
         shell: pwsh
         run: |
-          $wix = Get-Command wix -ErrorAction SilentlyContinue
-          if (-not $wix) {
-            Write-Host "WiX is not available; skipping installer build."
-            exit 0
-          }
-          wix build installer/wix/Product.wxs -d SourceDir=dist -o dist/IME-Keys-for-US-0.1.0-x64-unsigned.msi
-          Get-FileHash dist/IME-Keys-for-US-0.1.0-x64-unsigned.msi -Algorithm SHA256 | Format-List | Out-File -Append dist/SHA256SUMS.txt
+          wix build installer/wix/Product.wxs -d SourceDir=dist -o "dist/IME-Keys-for-US-$env:RELEASE_VERSION-x64-unsigned.msi"
+          Get-FileHash "dist/IME-Keys-for-US-$env:RELEASE_VERSION-x64-unsigned.msi" -Algorithm SHA256 | Format-List | Out-File -Append dist/SHA256SUMS.txt
 
       - name: Upload artifacts to GitHub Release
         uses: softprops/action-gh-release@v2
@@ -58,4 +65,3 @@ jobs:
             dist/*.zip
             dist/*.msi
             dist/SHA256SUMS.txt
-

@@ -34,15 +34,6 @@
                   WorkingDirectory="INSTALLFOLDER"
                   Advertise="yes" />
       </Component>
-      <Component Id="StartupRegistry" Guid="58D8E13C-75B1-46F7-83B8-887094CB7372">
-        <RegistryValue Root="HKCU"
-                       Key="Software\Microsoft\Windows\CurrentVersion\Run"
-                       Name="IME Keys for US"
-                       Type="string"
-                       Value="[INSTALLFOLDER]ime-keys-for-us.exe"
-                       KeyPath="yes" />
-      </Component>
     </ComponentGroup>
   </Fragment>
 </Wix>
-

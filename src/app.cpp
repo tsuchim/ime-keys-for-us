@@ -1,5 +1,6 @@
 #include "app.h"
 
+#include "app_messages.h"
 #include "resource.h"
 
 #include <windowsx.h>
@@ -10,8 +11,7 @@ constexpr UINT_PTR kLongPressTimerId = 1;
 constexpr UINT kTimerIntervalMs = 20;
 }  // namespace
 
-App::App(HINSTANCE instance)
-    : instance_(instance), tray_icon_(instance), keyboard_hook_() {}
+App::App(HINSTANCE instance) : instance_(instance), tray_icon_(instance) {}
 
 App::~App() {
   keyboard_hook_.Uninstall();
@@ -38,15 +38,12 @@ bool App::Initialize() {
     return false;
   }
 
-  if (!tray_icon_.Add(hwnd_)) {
-    return false;
-  }
-
-  if (!keyboard_hook_.Install()) {
+  if (!keyboard_hook_.Install(hwnd_)) {
     return false;
   }
 
   SetTimer(hwnd_, kLongPressTimerId, kTimerIntervalMs, nullptr);
+  tray_icon_.Add(hwnd_);
   return true;
 }
 
@@ -75,6 +72,16 @@ LRESULT CALLBACK App::WindowProc(HWND hwnd, UINT message, WPARAM wparam,
 }
 
 LRESULT App::HandleMessage(UINT message, WPARAM wparam, LPARAM lparam) {
+  if (message == WM_APP_SET_IME_OFF) {
+    ime_controller_.SetOpenStatus(false);
+    return 0;
+  }
+
+  if (message == WM_APP_SET_IME_ON) {
+    ime_controller_.SetOpenStatus(true);
+    return 0;
+  }
+
   if (message == TrayIcon::MessageId()) {
     tray_icon_.HandleMessage(hwnd_, lparam);
     return 0;
@@ -99,4 +106,3 @@ LRESULT App::HandleMessage(UINT message, WPARAM wparam, LPARAM lparam) {
 
   return DefWindowProcW(hwnd_, message, wparam, lparam);
 }
-

@@ -5,7 +5,6 @@ v0.1.0 prepares WiX-based installer packaging. The installer is expected to:
 - Install to `C:\Program Files\ImeKeysForUS\`.
 - Install `ime-keys-for-us.exe`.
 - Add a Start Menu shortcut.
-- Support current-user logon startup registration.
 - Add uninstall support.
 - Support signed executable and signed installer artifacts.
 
@@ -25,5 +24,11 @@ If WiX is unavailable in CI, CI should continue producing the executable artifac
 
 ## Startup
 
-Preferred startup registration is current-user logon startup from the installer. Users who need early startup or UIAccess/elevated-window testing can create a Task Scheduler task manually.
+v0.1.0 does not register auto-start from the MSI by default. This avoids mixing a per-machine Program Files install with an elevated MSI writing to the installing user's `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`.
 
+Manual startup options:
+
+- Put a shortcut to `C:\Program Files\ImeKeysForUS\ime-keys-for-us.exe` in the current user's Startup folder.
+- Create a current-user Task Scheduler task when early startup or UIAccess/elevated-window testing is needed.
+
+Future versions may add an explicit, user-visible startup option.

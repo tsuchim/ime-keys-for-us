@@ -23,7 +23,8 @@ ALT_TAP_MAX_MS = 250
 2. If a non-Alt key is pressed while Alt is held, the held Alt down is replayed with `SendInput`, the non-Alt key passes through, and IME state is unchanged.
 3. If the long-press threshold is reached first, standalone Alt down/up is emitted and IME state is unchanged.
 4. If the opposite Alt is pressed, standalone Alt for the second key is emitted and IME state is unchanged.
-5. If Alt up arrives while the gesture is undecided, Left Alt sets IME OFF and Right Alt sets IME ON.
+5. If Alt up arrives while the gesture is undecided, the hook posts an IME request to the app hidden window: Left Alt requests IME OFF and Right Alt requests IME ON.
 
 Synthetic input is marked with `dwExtraInfo` and ignored by the hook to prevent recursion.
 
+The hook does not call IMM APIs directly. `App::HandleMessage()` performs IME control from the normal message loop after receiving the posted request.

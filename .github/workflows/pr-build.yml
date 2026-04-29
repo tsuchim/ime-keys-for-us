@@ -23,14 +23,12 @@ jobs:
           name: ime-keys-for-us-unsigned-x64
           path: build/**/Release/ime-keys-for-us.exe
 
-      - name: Try building installer when WiX is available
+      - name: Install WiX
+        run: dotnet tool install --global wix --version 4.0.6
+
+      - name: Build installer
         shell: pwsh
         run: |
-          $wix = Get-Command wix -ErrorAction SilentlyContinue
-          if (-not $wix) {
-            Write-Host "WiX is not available; skipping installer build."
-            exit 0
-          }
           $exe = Get-ChildItem build -Recurse -Filter ime-keys-for-us.exe | Select-Object -First 1
           if (-not $exe) {
             throw "Executable not found."
@@ -43,4 +41,3 @@ jobs:
           name: ime-keys-for-us-installer-unsigned-x64
           path: IME-Keys-for-US-0.1.0-x64-unsigned.msi
           if-no-files-found: ignore
-

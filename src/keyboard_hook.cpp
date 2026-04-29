@@ -1,5 +1,6 @@
 #include "keyboard_hook.h"
 
+#include "app_messages.h"
 #include "synthetic_input_guard.h"
 
 KeyboardHook* KeyboardHook::instance_ = nullptr;
@@ -10,15 +11,17 @@ KeyboardHook::~KeyboardHook() {
   Uninstall();
 }
 
-bool KeyboardHook::Install() {
+bool KeyboardHook::Install(HWND notify_window) {
   if (hook_ != nullptr) {
     return true;
   }
 
+  notify_window_ = notify_window;
   instance_ = this;
   hook_ = SetWindowsHookExW(WH_KEYBOARD_LL, KeyboardHook::HookProc, nullptr, 0);
   if (hook_ == nullptr) {
     instance_ = nullptr;
+    notify_window_ = nullptr;
     return false;
   }
   return true;
@@ -32,6 +35,7 @@ void KeyboardHook::Uninstall() {
   if (instance_ == this) {
     instance_ = nullptr;
   }
+  notify_window_ = nullptr;
 }
 
 void KeyboardHook::TickLongPress() {
@@ -86,7 +90,6 @@ bool KeyboardHook::HandleKeyDown(const KBDLLHOOKSTRUCT& event, AltKey key) {
     if (gesture_.state == GestureState::Undecided &&
         gesture_.key != AltKey::None) {
       ReplayAltDown(gesture_.key);
-      gesture_.synthetic_alt_down_sent = true;
       gesture_.state = GestureState::NormalShortcut;
     }
     return false;
@@ -124,7 +127,7 @@ bool KeyboardHook::HandleKeyUp(const KBDLLHOOKSTRUCT&, AltKey key) {
   }
 
   if (gesture_.state == GestureState::Undecided && gesture_.key == key) {
-    SetImeForTap(key);
+    PostImeRequestForTap(key);
     ResetGesture();
     return true;
   }
@@ -185,11 +188,15 @@ void KeyboardHook::EmitStandaloneAlt(AltKey key) {
   ReplayAltUp(key);
 }
 
-void KeyboardHook::SetImeForTap(AltKey key) {
+void KeyboardHook::PostImeRequestForTap(AltKey key) {
+  if (notify_window_ == nullptr) {
+    return;
+  }
+
   if (key == AltKey::Left) {
-    ime_controller_.SetOpenStatus(false);
+    PostMessageW(notify_window_, WM_APP_SET_IME_OFF, 0, 0);
   } else if (key == AltKey::Right) {
-    ime_controller_.SetOpenStatus(true);
+    PostMessageW(notify_window_, WM_APP_SET_IME_ON, 0, 0);
   }
 }
 

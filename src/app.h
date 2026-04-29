@@ -1,6 +1,7 @@
 #pragma once
 
 #include "keyboard_hook.h"
+#include "ime_controller.h"
 #include "tray_icon.h"
 
 #include <windows.h>
@@ -22,5 +23,5 @@ class App {
   HWND hwnd_ = nullptr;
   TrayIcon tray_icon_;
   KeyboardHook keyboard_hook_;
+  ImeController ime_controller_;
 };
-

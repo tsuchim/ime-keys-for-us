@@ -253,3 +253,29 @@ Important remaining items:
 - Release artifact signing and SHA256 generation before final release publication.
 - winget manifest completion after GitHub Release URL and SHA256 are known.
 
+## 15. Follow-up Fixes Before Merge
+
+GHQ reviewed PR #1 and recommended not merging until several v0.1.0 readiness issues were fixed. The findings were accepted as valid.
+
+Applied fixes:
+
+- Moved IME control out of the low-level keyboard hook path.
+- Added `src/app_messages.h` with `WM_APP_SET_IME_OFF` and `WM_APP_SET_IME_ON`.
+- Changed `KeyboardHook` so Alt tap classification posts a custom message to the hidden app window.
+- Changed `App::HandleMessage()` so it calls `ImeController::SetOpenStatus()` from the normal message loop.
+- Made tray icon creation non-fatal.
+- Changed startup order to create the hidden window, install the keyboard hook, start the long-press timer, then add the tray icon.
+- Removed unused `synthetic_alt_down_sent` state.
+- Removed default HKCU Run startup registration from the per-machine MSI.
+- Updated installer documentation to describe manual startup options.
+- Updated GitHub Actions workflows to install WiX v4 explicitly with `dotnet tool install --global wix --version 4.0.6`.
+- Updated release workflow artifact names to derive the version from the Git tag.
+
+Behavior intentionally unchanged:
+
+- Left Alt tap = IME OFF.
+- Right Alt tap = IME ON.
+- Alt + another key = normal Alt shortcut.
+- Long press Alt = standalone Alt fallback.
+- Cross Alt = standalone Alt fallback.
+- Double-tap remains unimplemented.
