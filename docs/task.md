@@ -2,6 +2,12 @@
 
 このファイルは、初期実装時の要求をいつでも確認できるようにするための作業指示です。
 
+関連する詳細記録:
+
+- `docs/original-request.md`: 初回要求を仕様として整理した記録。
+- `docs/implementation-log.md`: v0.1.0 初期実装で実際に行った手順の記録。
+- `docs/issues.md`: 後で解決する懸案の記録。
+
 ## 目的
 
 `IME Keys for US` は、日本語ユーザーが US キーボード上で明示的な IME OFF / IME ON キーを使えるようにする、狭いスコープのネイティブ Windows アプリケーションです。
@@ -39,4 +45,3 @@
 - PR タイトルは `Build initial IME Keys for US v0.1.0`。
 - GitHub Release はレビュー後に `v0.1.0` tag から作成する。
 - winget manifest は GitHub Release URL と SHA256 が確定してから完成させる。
-
