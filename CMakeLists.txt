@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.21)
 
 project(ImeKeysForUS VERSION 0.1.2 LANGUAGES CXX RC)
 
+set(IME_KEYS_VERSION_4 "${PROJECT_VERSION}.0")
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -46,7 +48,7 @@ target_compile_definitions(ImeKeysForUS PRIVATE
   IME_KEYS_VERSION_MAJOR=${PROJECT_VERSION_MAJOR}
   IME_KEYS_VERSION_MINOR=${PROJECT_VERSION_MINOR}
   IME_KEYS_VERSION_PATCH=${PROJECT_VERSION_PATCH}
-  IME_KEYS_VERSION_STRING="${PROJECT_VERSION}"
+  IME_KEYS_VERSION_STRING="${IME_KEYS_VERSION_4}"
 )
 
 target_link_libraries(ImeKeysForUS PRIVATE
@@ -60,9 +62,21 @@ if(MSVC)
   target_compile_options(ImeKeysForUS PRIVATE /W4 /permissive-)
 endif()
 
-set(_manifest "${CMAKE_CURRENT_SOURCE_DIR}/src/app.manifest")
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/app.manifest.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/generated/app.manifest"
+  @ONLY
+)
+
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/app-uiaccess.manifest.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/generated/app-uiaccess.manifest"
+  @ONLY
+)
+
+set(_manifest "${CMAKE_CURRENT_BINARY_DIR}/generated/app.manifest")
 if(IME_KEYS_UIACCESS)
-  set(_manifest "${CMAKE_CURRENT_SOURCE_DIR}/src/app-uiaccess.manifest")
+  set(_manifest "${CMAKE_CURRENT_BINARY_DIR}/generated/app-uiaccess.manifest")
 endif()
 
 if(MSVC)
