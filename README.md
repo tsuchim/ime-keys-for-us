@@ -1,146 +1,82 @@
 # IME Keys for US
 
-IME Keys for US is a small native Windows utility for Japanese users on US keyboards.
+IME Keys for US は、US キーボードで日本語入力を使う人のための小さな Windows 常駐アプリです。
 
-It maps left and right Alt taps to explicit IME OFF and IME ON operations after a short double-tap timeout. This avoids IME toggle behavior, which can be hard to reason about when switching between Word, browsers, VS Code, terminals, and other apps.
+左 Alt / 右 Alt を IME の明示的な OFF / ON キーとして使います。IME トグルではありません。Word、ブラウザー、VS Code、ターミナルなどを行き来するときに、「いま日本語入力なのか英字入力なのか」を覚えておく負担を減らすことを目的にしています。
 
-This project is licensed under the MIT License.
+このプロジェクトはクリーンなネイティブ実装です。AutoHotkey は含みません。`alt-ime-ahk` などのコードもコピーしていません。
 
-This project is a clean native implementation and does not include AutoHotkey or code copied from alt-ime-ahk.
+## 動作
 
-## Default Key Behavior
-
-| Input | Behavior |
+| 入力 | 動作 |
 |---|---|
-| Left Alt single tap | IME OFF after double-tap timeout |
-| Right Alt single tap | IME ON after double-tap timeout |
-| Left Alt tap, then Left Alt down within timeout | Cancel IME OFF and enter normal Left Alt mode |
-| Right Alt tap, then Right Alt down within timeout | Cancel IME ON and enter normal Right Alt mode |
-| Left Alt + another key | Normal Left Alt shortcut |
-| Right Alt + another key | Normal Right Alt shortcut |
-| Right Alt held, then Left Alt | Standalone Left Alt |
-| Left Alt held, then Right Alt | Standalone Right Alt |
+| 左 Alt を 1 回押す | `DoubleTapMs` 後に IME OFF |
+| 右 Alt を 1 回押す | `DoubleTapMs` 後に IME ON |
+| 左 Alt を押して離し、時間内にもう一度左 Alt を押す | IME OFF をキャンセルし、通常の左 Alt として扱う |
+| 右 Alt を押して離し、時間内にもう一度右 Alt を押す | IME ON をキャンセルし、通常の右 Alt として扱う |
+| 左 Alt + 他のキー | 通常の左 Alt ショートカット |
+| 右 Alt + 他のキー | 通常の右 Alt ショートカット |
+| 右 Alt を押したまま左 Alt | 単独の左 Alt |
+| 左 Alt を押したまま右 Alt | 単独の右 Alt |
 
-Double-tap is implemented by treating the second same-key Alt press within the timeout as an explicit request for normal Alt behavior. If the second press is released immediately, it behaves like standalone Alt. If another key is pressed while holding it, it behaves like a normal Alt shortcut. This intentionally avoids guessing ambiguous intent after the second press.
+2 回目の同じ Alt が時間内に押された時点で、「IME ではなく通常の Alt を使いたい」と判断します。2 回目をすぐ離せば単独 Alt として動き、押したまま別のキーを押せば通常の Alt+キーとして動きます。
 
-## Settings
+## 設定
 
-The double-tap timeout is loaded at startup from:
+設定ファイル:
 
 ```text
 %APPDATA%\ImeKeysForUS\settings.ini
 ```
 
-Format:
+例:
 
 ```ini
 [Keyboard]
 DoubleTapMs=100
 ```
 
-The default is `100 ms`. Valid values are clamped to `100-500 ms`. Shorter values reduce IME switching delay; longer values make double-tap easier. Restart the app after editing settings in v0.1.0.
+既定値は `100 ms` です。指定できる値は `100-500 ms` に丸められます。短い値ほど IME 切り替えの遅延が小さくなり、長い値ほど 2 回押しがしやすくなります。v0.1.0 では、設定変更後にアプリの再起動が必要です。
 
-## Start at Sign-in
+## 自動起動
 
-IME Keys for US does not enable startup automatically during MSI installation.
+MSI インストール時には自動起動を有効にしません。
 
-To enable startup for the current user, launch the app, open the tray menu, and enable `Start at sign-in`.
+現在のユーザーで自動起動したい場合は、タスクトレイメニューから `Start at sign-in` を有効にしてください。
 
-Alternatively:
+コマンドでも設定できます。
 
 ```powershell
 "C:\Program Files\ImeKeysForUS\ime-keys-for-us.exe" --enable-startup
 ```
 
-To disable:
+解除:
 
 ```powershell
 "C:\Program Files\ImeKeysForUS\ime-keys-for-us.exe" --disable-startup
 ```
 
-Startup is stored in the current user's `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` key as `"ime-keys-for-us.exe" --startup`.
+## 既知の制限
 
-## Installation Status
+- IME 制御は IMM ベースです。IME やアプリの組み合わせによっては完全に動かない場合があります。
+- TSF 対応はまだありません。
+- 管理者権限で起動したアプリ上で使うには、将来的に UIAccess 署名ビルドの検証が必要です。
+- CI で作られる成果物は unsigned の場合があります。
+- Microsoft Store 配布は v0.1.0 の対象外です。
+- winget 提出は準備のみで、自動では行いません。
+- Right Alt は、AltGr として扱われるキーボードレイアウトでは挙動が異なる可能性があります。
+- 設定 UI はまだありません。
 
-v0.1.0 is the first native implementation. Installer packaging is prepared, but unsigned CI artifacts are acceptable for this release. Locally signed artifacts can be produced on a development machine that has the expected code signing certificate.
+## English
 
-## Build
+English README: [README.en.md](README.en.md)
 
-Requirements:
+## 開発者向け情報
 
-- Windows 10 or 11
-- Visual Studio 2022 Build Tools
-- CMake 3.21 or later
+ビルド、署名、UIAccess、リリース手順は [docs/development.md](docs/development.md) を見てください。
 
-Build x64 Release:
+手動テスト項目は [docs/manual-test-checklist.md](docs/manual-test-checklist.md) にあります。
 
-```powershell
-cmake -S . -B build -G "Visual Studio 17 2022" -A x64
-cmake --build build --config Release
-```
-
-Expected executable:
-
-```text
-build\Release\ime-keys-for-us.exe
-```
-
-Depending on the generator layout, the executable may be under a configuration subdirectory below `build`.
-
-## Local Signing
-
-Local signing is optional. The build supports signing with `signtool` by certificate thumbprint:
-
-```powershell
-cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DIME_KEYS_SIGN_AFTER_BUILD=ON
-cmake --build build --config Release
-```
-
-Expected local certificate:
-
-- Subject: `CN=tsuchim`
-- Thumbprint: `A8B29BB0F03E4955B62E1CA798B6041F29812385`
-- Store: `CurrentUser\My`
-- EKU: Code Signing
-
-Do not commit certificates, private keys, PFX files, certificate passwords, or secrets.
-
-## UIAccess
-
-Normal unsigned builds run at medium integrity and may not work over elevated administrator windows.
-
-UIAccess-capable builds require:
-
-- Authenticode signing
-- A trusted signing certificate on the local machine
-- Installation in a secure location such as `C:\Program Files\ImeKeysForUS\`
-- A manifest with `uiAccess="true"`
-
-Configure a UIAccess manifest build with:
-
-```powershell
-cmake -S . -B build-uiaccess -G "Visual Studio 17 2022" -A x64 -DIME_KEYS_UIACCESS=ON -DIME_KEYS_SIGN_AFTER_BUILD=ON
-cmake --build build-uiaccess --config Release
-```
-
-Running the app itself as administrator is not the preferred long-term design. UIAccess is preferred when elevated-window support is needed.
-
-## Known Limitations
-
-- IMM-based IME control may not work perfectly for every IME/application combination.
-- TSF support is not implemented yet.
-- UIAccess requires signing and secure installation.
-- CI artifacts may be unsigned.
-- Store distribution is not the target for v0.1.0.
-- winget submission is prepared but not automatic.
-- Right Alt may behave differently on layouts that treat it as AltGr.
-- AX keyboard layouts may need separate handling in a future release.
-- No settings UI yet.
-
-## Manual Testing
-
-See [docs/manual-test-checklist.md](docs/manual-test-checklist.md).
-
-## License
+## ライセンス
 
 MIT License. See [LICENSE](LICENSE).
