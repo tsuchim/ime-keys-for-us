@@ -34,8 +34,10 @@ WiX v4.0.6 is used in CI.
 Local MSI build example:
 
 ```powershell
-build\wix4\wix.exe build installer\wix\Product.wxs -arch x64 -d SourceDir=build\Release -o build\IME-Keys-for-US-0.1.1-x64.msi
+build\wix4\wix.exe build installer\wix\Product.wxs -arch x64 -d SourceDir=build\Release -d ProductVersion=0.1.1 -o build\IME-Keys-for-US-0.1.1-x64.msi
 ```
+
+This example produces an unsigned MSI unless `build\Release\ime-keys-for-us.exe` has already been signed. Sign the executable first when preparing a signed public MSI.
 
 The MSI must:
 

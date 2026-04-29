@@ -62,7 +62,7 @@ The v0.1.1 distribution `exe` and `MSI` are Authenticode-signed with a local `CN
 
 This is a personal open-source project and the certificate is not a public CA-trusted code-signing certificate. Windows SmartScreen or publisher warnings may still appear depending on the environment.
 
-The signature is provided so users can verify that the distributed artifacts have not been modified after signing. When installed through winget, the installer is also verified by the SHA256 hash in the manifest.
+The signature is provided so users can verify that the distributed artifacts have not been modified after signing. If/when the app is distributed through winget, the installer is also verified by the SHA256 hash in the manifest. Winget submission/publication is manual and may not be available at all times.
 
 ## Known Limitations
 
