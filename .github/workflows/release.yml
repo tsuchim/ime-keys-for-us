@@ -1,0 +1,61 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure
+        run: cmake -S . -B build -G "Visual Studio 17 2022" -A x64
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Stage executable zip
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist | Out-Null
+          $exe = Get-ChildItem build -Recurse -Filter ime-keys-for-us.exe | Select-Object -First 1
+          Copy-Item $exe.FullName dist/ime-keys-for-us.exe
+          Compress-Archive -Path dist/ime-keys-for-us.exe -DestinationPath dist/ime-keys-for-us-0.1.0-x64-unsigned.zip -Force
+          Get-FileHash dist/ime-keys-for-us-0.1.0-x64-unsigned.zip -Algorithm SHA256 | Format-List | Out-File dist/SHA256SUMS.txt
+
+      - name: Try building installer when WiX is available
+        shell: pwsh
+        run: |
+          $wix = Get-Command wix -ErrorAction SilentlyContinue
+          if (-not $wix) {
+            Write-Host "WiX is not available; skipping installer build."
+            exit 0
+          }
+          wix build installer/wix/Product.wxs -d SourceDir=dist -o dist/IME-Keys-for-US-0.1.0-x64-unsigned.msi
+          Get-FileHash dist/IME-Keys-for-US-0.1.0-x64-unsigned.msi -Algorithm SHA256 | Format-List | Out-File -Append dist/SHA256SUMS.txt
+
+      - name: Upload artifacts to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: IME Keys for US ${{ github.ref_name }}
+          body: |
+            Unsigned CI artifacts for IME Keys for US.
+
+            Known limitations:
+            - IMM-based IME control may not work perfectly for every IME/application combination.
+            - TSF support is not implemented yet.
+            - UIAccess requires signing and secure installation.
+            - CI artifacts may be unsigned.
+          files: |
+            dist/*.zip
+            dist/*.msi
+            dist/SHA256SUMS.txt
+

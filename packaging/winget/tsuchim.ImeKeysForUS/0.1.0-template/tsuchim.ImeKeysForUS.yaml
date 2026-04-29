@@ -1,0 +1,7 @@
+# Incomplete winget manifest template. Fill URLs and hashes after GitHub Release.
+PackageIdentifier: tsuchim.ImeKeysForUS
+PackageVersion: 0.1.0
+DefaultLocale: en-US
+ManifestType: version
+ManifestVersion: 1.9.0
+
