@@ -58,7 +58,7 @@ To disable:
 
 ## Code signing
 
-The v0.1.1 distribution `exe` and `MSI` are Authenticode-signed with a local `CN=tsuchim` code-signing certificate.
+The v0.1.2 distribution `exe` and `MSI` are Authenticode-signed with a local `CN=tsuchim` code-signing certificate.
 
 This is a personal open-source project and the certificate is not a public CA-trusted code-signing certificate. Windows SmartScreen or publisher warnings may still appear depending on the environment.
 
@@ -69,7 +69,7 @@ The signature is provided so users can verify that the distributed artifacts hav
 - IME control uses IMM first and may not work perfectly with every IME/application combination.
 - TSF support is not implemented yet.
 - Elevated application support requires future UIAccess signed-build validation.
-- CI artifacts may be unsigned. The preferred v0.1.1 distribution artifacts are locally signed.
+- CI artifacts may be unsigned. The preferred v0.1.2 distribution artifacts are locally signed.
 - Microsoft Store distribution is out of scope for v0.1.x.
 - Right Alt may behave differently on layouts that treat it as AltGr.
 - There is no settings UI yet.

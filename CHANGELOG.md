@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2
+
+- Fixed the MSI package version to follow the release version passed to WiX.
+- Clarified winget wording while publication is still under review.
+- Prepared the release for locally signed public artifacts.
+
 ## 0.1.1
 
 - Published locally Authenticode-signed distribution artifacts.
