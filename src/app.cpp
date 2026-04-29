@@ -62,16 +62,18 @@ LRESULT CALLBACK App::WindowProc(HWND hwnd, UINT message, WPARAM wparam,
   if (message == WM_NCCREATE) {
     auto* create = reinterpret_cast<CREATESTRUCTW*>(lparam);
     app = reinterpret_cast<App*>(create->lpCreateParams);
+    app->hwnd_ = hwnd;
     SetWindowLongPtrW(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(app));
   }
 
   if (app != nullptr) {
-    return app->HandleMessage(message, wparam, lparam);
+    return app->HandleMessage(hwnd, message, wparam, lparam);
   }
   return DefWindowProcW(hwnd, message, wparam, lparam);
 }
 
-LRESULT App::HandleMessage(UINT message, WPARAM wparam, LPARAM lparam) {
+LRESULT App::HandleMessage(HWND hwnd, UINT message, WPARAM wparam,
+                           LPARAM lparam) {
   if (message == WM_APP_SET_IME_OFF) {
     ime_controller_.SetOpenStatus(false);
     return 0;
@@ -104,5 +106,5 @@ LRESULT App::HandleMessage(UINT message, WPARAM wparam, LPARAM lparam) {
       return 0;
   }
 
-  return DefWindowProcW(hwnd_, message, wparam, lparam);
+  return DefWindowProcW(hwnd, message, wparam, lparam);
 }

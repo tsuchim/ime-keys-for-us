@@ -270,6 +270,21 @@ Applied fixes:
 - Updated installer documentation to describe manual startup options.
 - Updated GitHub Actions workflows to install WiX v4 explicitly with `dotnet tool install --global wix --version 4.0.6`.
 - Updated release workflow artifact names to derive the version from the Git tag.
+- Updated PR workflow MSI artifact names to derive the version from `CMakeLists.txt`.
+
+## 16. PR Review Comments
+
+Copilot review comments on PR #1 were handled as follows:
+
+- Accepted: pass the actual `HWND` through `App::HandleMessage()` and use it for `DefWindowProcW`.
+- Accepted: release the single-instance mutex only when the process owns it.
+- Accepted: call `PostMessageW(hwnd, WM_NULL, 0, 0)` after tray context menu tracking.
+- Accepted: compare tray callback `lParam` directly to `WM_CONTEXTMENU` and `WM_RBUTTONUP`.
+- Accepted: use scan-code based `SendInput` consistently with `KEYEVENTF_SCANCODE`.
+- Already handled: remove per-machine MSI default HKCU Run registration.
+- Accepted: remove unused `IME_KEYS_VERSION` compile definition.
+- Already handled and kept: release workflow artifact names derive from the Git tag.
+- Accepted: PR workflow MSI artifact name derives from `CMakeLists.txt`.
 
 Behavior intentionally unchanged:
 

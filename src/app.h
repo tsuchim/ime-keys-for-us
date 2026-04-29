@@ -17,7 +17,8 @@ class App {
  private:
   static LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wparam,
                                      LPARAM lparam);
-  LRESULT HandleMessage(UINT message, WPARAM wparam, LPARAM lparam);
+  LRESULT HandleMessage(HWND hwnd, UINT message, WPARAM wparam,
+                        LPARAM lparam);
 
   HINSTANCE instance_;
   HWND hwnd_ = nullptr;

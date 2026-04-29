@@ -7,7 +7,9 @@ SingleInstance::SingleInstance(const wchar_t* mutex_name) {
 
 SingleInstance::~SingleInstance() {
   if (mutex_ != nullptr) {
-    ReleaseMutex(mutex_);
+    if (primary_) {
+      ReleaseMutex(mutex_);
+    }
     CloseHandle(mutex_);
   }
 }
@@ -15,4 +17,3 @@ SingleInstance::~SingleInstance() {
 bool SingleInstance::IsPrimary() const {
   return primary_;
 }
-

@@ -166,9 +166,8 @@ void KeyboardHook::ResetGesture() {
 void KeyboardHook::ReplayAltDown(AltKey key) {
   INPUT input{};
   input.type = INPUT_KEYBOARD;
-  input.ki.wVk = VkForAlt(key);
   input.ki.wScan = ScanCodeForAlt(key);
-  input.ki.dwFlags = FlagsForAlt(key);
+  input.ki.dwFlags = KEYEVENTF_SCANCODE | FlagsForAlt(key);
   input.ki.dwExtraInfo = SyntheticInputGuard::Marker();
   SendInput(1, &input, sizeof(input));
 }
@@ -176,9 +175,8 @@ void KeyboardHook::ReplayAltDown(AltKey key) {
 void KeyboardHook::ReplayAltUp(AltKey key) {
   INPUT input{};
   input.type = INPUT_KEYBOARD;
-  input.ki.wVk = VkForAlt(key);
   input.ki.wScan = ScanCodeForAlt(key);
-  input.ki.dwFlags = FlagsForAlt(key) | KEYEVENTF_KEYUP;
+  input.ki.dwFlags = KEYEVENTF_SCANCODE | FlagsForAlt(key) | KEYEVENTF_KEYUP;
   input.ki.dwExtraInfo = SyntheticInputGuard::Marker();
   SendInput(1, &input, sizeof(input));
 }
@@ -259,13 +257,10 @@ bool KeyboardHook::IsAltKey(const KBDLLHOOKSTRUCT& event, AltKey* key) {
 }
 
 WORD KeyboardHook::ScanCodeForAlt(AltKey key) {
-  return static_cast<WORD>(MapVirtualKeyW(VkForAlt(key), MAPVK_VK_TO_VSC));
+  const UINT vk = key == AltKey::Right ? VK_RMENU : VK_LMENU;
+  return static_cast<WORD>(MapVirtualKeyW(vk, MAPVK_VK_TO_VSC));
 }
 
 DWORD KeyboardHook::FlagsForAlt(AltKey key) {
   return key == AltKey::Right ? KEYEVENTF_EXTENDEDKEY : 0;
-}
-
-WORD KeyboardHook::VkForAlt(AltKey key) {
-  return key == AltKey::Right ? VK_RMENU : VK_LMENU;
 }

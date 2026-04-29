@@ -38,7 +38,6 @@ target_compile_definitions(ImeKeysForUS PRIVATE
   _UNICODE
   WIN32_LEAN_AND_MEAN
   NOMINMAX
-  IME_KEYS_VERSION=L"${PROJECT_VERSION}"
 )
 
 target_link_libraries(ImeKeysForUS PRIVATE

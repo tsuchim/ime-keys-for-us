@@ -43,7 +43,7 @@ void TrayIcon::Remove() {
 }
 
 void TrayIcon::HandleMessage(HWND hwnd, LPARAM lparam) {
-  if (LOWORD(lparam) == WM_CONTEXTMENU || lparam == WM_RBUTTONUP) {
+  if (lparam == WM_CONTEXTMENU || lparam == WM_RBUTTONUP) {
     ShowMenu(hwnd);
   }
 }
@@ -61,6 +61,6 @@ void TrayIcon::ShowMenu(HWND hwnd) {
   SetForegroundWindow(hwnd);
   TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_BOTTOMALIGN | TPM_LEFTALIGN,
                  cursor.x, cursor.y, 0, hwnd, nullptr);
+  PostMessageW(hwnd, WM_NULL, 0, 0);
   DestroyMenu(menu);
 }
-

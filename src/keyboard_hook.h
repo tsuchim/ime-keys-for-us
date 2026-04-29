@@ -60,7 +60,6 @@ class KeyboardHook {
   static bool IsAltKey(const KBDLLHOOKSTRUCT& event, AltKey* key);
   static WORD ScanCodeForAlt(AltKey key);
   static DWORD FlagsForAlt(AltKey key);
-  static WORD VkForAlt(AltKey key);
 
   HHOOK hook_ = nullptr;
   HWND notify_window_ = nullptr;

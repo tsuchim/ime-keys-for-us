@@ -17,6 +17,15 @@ jobs:
       - name: Build
         run: cmake --build build --config Release
 
+      - name: Resolve project version
+        shell: pwsh
+        run: |
+          $cmakeLists = Get-Content CMakeLists.txt -Raw
+          if ($cmakeLists -notmatch 'project\(ImeKeysForUS VERSION ([0-9]+\.[0-9]+\.[0-9]+)') {
+            throw "Could not resolve project version from CMakeLists.txt."
+          }
+          "PROJECT_VERSION=$($Matches[1])" | Out-File -FilePath $env:GITHUB_ENV -Append
+
       - name: Upload executable
         uses: actions/upload-artifact@v4
         with:
@@ -33,11 +42,11 @@ jobs:
           if (-not $exe) {
             throw "Executable not found."
           }
-          wix build installer/wix/Product.wxs -d SourceDir=$($exe.Directory.FullName) -o IME-Keys-for-US-0.1.0-x64-unsigned.msi
+          wix build installer/wix/Product.wxs -d SourceDir=$($exe.Directory.FullName) -o "IME-Keys-for-US-$env:PROJECT_VERSION-x64-unsigned.msi"
 
       - name: Upload installer if built
         uses: actions/upload-artifact@v4
         with:
           name: ime-keys-for-us-installer-unsigned-x64
-          path: IME-Keys-for-US-0.1.0-x64-unsigned.msi
+          path: IME-Keys-for-US-*-x64-unsigned.msi
           if-no-files-found: ignore
