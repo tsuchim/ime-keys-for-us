@@ -20,8 +20,8 @@
 |---|---|
 | Left Alt single tap | IME OFF after double-tap timeout |
 | Right Alt single tap | IME ON after double-tap timeout |
-| Left Alt double tap | Standalone Left Alt |
-| Right Alt double tap | Standalone Right Alt |
+| Left Alt tap, then Left Alt down within timeout | Cancel IME OFF and enter normal Left Alt mode |
+| Right Alt tap, then Right Alt down within timeout | Cancel IME ON and enter normal Right Alt mode |
 | Left Alt + another key | Normal Left Alt shortcut |
 | Right Alt + another key | Normal Right Alt shortcut |
 | Right Alt held, then Left Alt | Standalone Left Alt |

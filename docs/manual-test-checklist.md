@@ -27,10 +27,11 @@
 
 ## Double Tap
 
-- [ ] Left Alt double tap emits standalone Left Alt.
-- [ ] Right Alt double tap emits standalone Right Alt.
-- [ ] Double tap does not change IME state.
-- [ ] Double tap timing follows `DoubleTapMs`.
+- [ ] Left Alt tap, then Left Alt down within `DoubleTapMs`, cancels pending IME OFF and enters normal Left Alt mode.
+- [ ] Right Alt tap, then Right Alt down within `DoubleTapMs`, cancels pending IME ON and enters normal Right Alt mode.
+- [ ] Releasing the second Alt immediately behaves like standalone Alt.
+- [ ] Pressing another key while holding the second Alt behaves like normal Alt+key.
+- [ ] Double-tap fallback does not change IME state.
 
 ## Settings
 

@@ -14,12 +14,14 @@ This project is a clean native implementation and does not include AutoHotkey or
 |---|---|
 | Left Alt single tap | IME OFF after double-tap timeout |
 | Right Alt single tap | IME ON after double-tap timeout |
-| Left Alt double tap | Standalone Left Alt |
-| Right Alt double tap | Standalone Right Alt |
+| Left Alt tap, then Left Alt down within timeout | Cancel IME OFF and enter normal Left Alt mode |
+| Right Alt tap, then Right Alt down within timeout | Cancel IME ON and enter normal Right Alt mode |
 | Left Alt + another key | Normal Left Alt shortcut |
 | Right Alt + another key | Normal Right Alt shortcut |
 | Right Alt held, then Left Alt | Standalone Left Alt |
 | Left Alt held, then Right Alt | Standalone Right Alt |
+
+Double-tap is implemented by treating the second same-key Alt press within the timeout as an explicit request for normal Alt behavior. If the second press is released immediately, it behaves like standalone Alt. If another key is pressed while holding it, it behaves like a normal Alt shortcut. This intentionally avoids guessing ambiguous intent after the second press.
 
 ## Settings
 

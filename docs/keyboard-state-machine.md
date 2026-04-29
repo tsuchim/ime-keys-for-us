@@ -31,8 +31,9 @@ DoubleTapMs=200
 2. If a non-Alt key is pressed while Alt is held, the held Alt down is replayed with scan-code based `SendInput`, the non-Alt key passes through, pending tap interpretation for that held gesture is canceled, and IME state is unchanged.
 3. If the opposite Alt is pressed while one Alt is held, standalone Alt for the second key is emitted, both physical Alt events are consumed for that gesture, and IME state is unchanged.
 4. If Alt up arrives while the gesture is `AltDownHeld`, the tap becomes `PendingTap`.
-5. If a second same-key tap completes before `DoubleTapMs`, the pending IME operation is canceled, standalone Alt is emitted, and IME state is unchanged.
-6. If `PendingTap` expires, the hook posts an IME request to the app hidden window: Left Alt requests IME OFF and Right Alt requests IME ON.
+5. If a second same-key Alt down arrives before `DoubleTapMs`, the pending IME operation is canceled, that Alt down is replayed, and the gesture enters normal Alt mode.
+6. If the replayed second Alt is released immediately, Windows sees standalone Alt. If another key is pressed while it is held, Windows sees a normal Alt shortcut.
+7. If `PendingTap` expires, the hook posts an IME request to the app hidden window: Left Alt requests IME OFF and Right Alt requests IME ON.
 
 If an opposite Alt gesture starts while a pending tap exists, an already-expired pending tap is resolved first. A still-active pending tap is canceled and the new physical gesture is treated independently. This avoids a delayed IME side effect while another Alt gesture is starting.
 

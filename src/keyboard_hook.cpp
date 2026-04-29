@@ -117,6 +117,15 @@ bool KeyboardHook::HandleKeyDown(const KBDLLHOOKSTRUCT& event, AltKey key) {
 
   if (gesture_.state == GestureState::Idle) {
     ResolveExpiredPendingTap(now);
+    if (IsPendingTapSameKeyWithinTimeout(key, now)) {
+      ClearPendingTap();
+      ReplayAltDown(key);
+      gesture_ = {};
+      gesture_.key = key;
+      gesture_.started_at = now;
+      gesture_.state = GestureState::NormalShortcut;
+      return true;
+    }
     if (HasPendingTap() && pending_tap_.key != key) {
       ClearPendingTap();
     }
@@ -138,7 +147,7 @@ bool KeyboardHook::HandleKeyDown(const KBDLLHOOKSTRUCT& event, AltKey key) {
     return true;
   }
 
-  return true;
+  return false;
 }
 
 bool KeyboardHook::HandleKeyUp(const KBDLLHOOKSTRUCT&, AltKey key) {
@@ -148,13 +157,8 @@ bool KeyboardHook::HandleKeyUp(const KBDLLHOOKSTRUCT&, AltKey key) {
 
   if (gesture_.state == GestureState::AltDownHeld && gesture_.key == key) {
     DWORD now = GetTickCount();
-    if (IsPendingTapSameKeyWithinTimeout(key, now)) {
-      ClearPendingTap();
-      EmitStandaloneAlt(key);
-    } else {
-      ResolveExpiredPendingTap(now);
-      BeginPendingTap(key, now);
-    }
+    ResolveExpiredPendingTap(now);
+    BeginPendingTap(key, now);
     ResetGesture();
     return true;
   }

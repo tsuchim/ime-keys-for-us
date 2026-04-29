@@ -6,8 +6,8 @@ Build initial native Win32 implementation of IME Keys for US v0.1.0.
 
 - Left Alt single tap sets IME OFF after the double-tap timeout.
 - Right Alt single tap sets IME ON after the double-tap timeout.
-- Left Alt double tap emits standalone Left Alt.
-- Right Alt double tap emits standalone Right Alt.
+- Left Alt tap, then Left Alt down within timeout, cancels IME OFF and enters normal Left Alt mode.
+- Right Alt tap, then Right Alt down within timeout, cancels IME ON and enters normal Right Alt mode.
 - Left Alt / Right Alt with another key is preserved as a normal Alt shortcut.
 - Cross Alt fallback emits standalone Alt for the second Alt key.
 
@@ -48,4 +48,4 @@ Build initial native Win32 implementation of IME Keys for US v0.1.0.
 
 ## Release notes draft
 
-Initial native Win32 release of IME Keys for US. This release provides explicit IME OFF on Left Alt single tap and IME ON on Right Alt single tap after a configurable double-tap timeout, while preserving normal Alt shortcuts and providing double-tap and cross Alt fallbacks for standalone Alt.
+Initial native Win32 release of IME Keys for US. This release provides explicit IME OFF on Left Alt single tap and IME ON on Right Alt single tap after a configurable double-tap timeout, while preserving normal Alt shortcuts and treating the second same-key Alt press within the timeout as a request for normal Alt behavior.

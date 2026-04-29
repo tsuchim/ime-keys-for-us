@@ -5,7 +5,7 @@
 - Added native Win32 application skeleton.
 - Added low-level keyboard hook for explicit Left Alt IME OFF and Right Alt IME ON single taps after a double-tap timeout.
 - Preserved normal Alt shortcuts by replaying the initially suppressed Alt down event.
-- Added same-key double-tap standalone Alt fallback.
+- Added same-key second Alt press fallback that cancels pending IME and enters normal Alt mode.
 - Added cross Alt fallback.
 - Added INI-based `DoubleTapMs` setting.
 - Added IMM-based IME open status controller.

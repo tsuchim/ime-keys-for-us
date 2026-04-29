@@ -14,7 +14,7 @@ In scope for v0.1.0:
 - Low-level keyboard hook.
 - Explicit IME ON/OFF by single Alt tap after the double-tap timeout.
 - Normal Alt shortcut preservation.
-- Same-key double-tap standalone Alt fallback.
+- Same-key second Alt press fallback for normal Alt behavior.
 - Cross Alt fallback.
 - Tray icon with Exit.
 - Single-instance guard.
@@ -33,7 +33,9 @@ IME ON/OFF is not executed directly from the hook callback. When an Alt tap time
 
 ## Double-tap Fallback
 
-Standalone Alt is emitted by double-tapping the same Alt key within the configured timeout. The first tap does not change IME immediately. If the timeout expires without a second same-key tap, the pending tap becomes an IME request.
+Double-tap is implemented by treating the second same-key Alt press within the configured timeout as an explicit request for normal Alt behavior. The first tap does not change IME immediately. If the timeout expires without a second same-key Alt down, the pending tap becomes an IME request.
+
+When the second same-key Alt down arrives within the timeout, the pending IME request is canceled and that second Alt down is replayed as a normal Alt down. If the user releases it immediately, Windows sees standalone Alt. If the user presses another key while holding it, Windows sees a normal Alt shortcut. This intentionally avoids guessing ambiguous intent after the second press.
 
 If an opposite Alt gesture starts while a pending tap exists, an already-expired pending tap is resolved first. A still-active pending tap is canceled and the new physical gesture is treated independently. This avoids a delayed IME side effect while the user is starting another Alt gesture.
 

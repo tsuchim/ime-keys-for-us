@@ -79,7 +79,7 @@ CMake project と Win32 source layout を作成した。
 - Left Alt down / Right Alt down は最初に suppress する。
 - Alt tap のまま key up した場合、pending tap として double-tap timeout を待つ。
 - Alt を押したまま non-Alt key が押された場合、suppressed Alt down を `SendInput` で replay し、通常 shortcut として通す。
-- double-tap timeout 以内に同じ Alt をもう一度 tap した場合、standalone Alt down/up を `SendInput` で送る。
+- double-tap timeout 以内に同じ Alt の 2 回目の down が来た場合、pending IME を cancel し、その Alt down を `SendInput` で replay して通常 Alt mode に入る。
 - pending tap が timeout した場合、Left Alt は IME OFF、Right Alt は IME ON を request する。
 - opposite Alt が押された場合、second Alt に対応する standalone Alt を送る。
 - synthetic input は `dwExtraInfo` marker で識別し、hook recursion を防ぐ。
@@ -293,7 +293,7 @@ Behavior after review fixes:
 - Left Alt single tap = IME OFF after timeout.
 - Right Alt single tap = IME ON after timeout.
 - Alt + another key = normal Alt shortcut.
-- Double-tap Alt = standalone Alt fallback.
+- Second same-key Alt press within timeout = normal Alt mode.
 - Cross Alt = standalone Alt fallback.
 
 ## 17. Double-tap Fallback Replaced Long-press
@@ -313,7 +313,7 @@ Applied changes:
 - Changed `DoubleTapMs` parsing to accept only strict numeric values; invalid values use the default.
 - Changed first Alt tap to create a pending tap instead of immediately changing IME.
 - Changed timeout resolution to post the existing IME ON/OFF app messages.
-- Changed same-key double-tap within timeout to emit standalone Alt without changing IME state.
+- Changed same-key double-tap within timeout to cancel pending IME and enter normal Alt mode without changing IME state.
 - Kept cross Alt fallback.
 - Documented that an opposite Alt gesture cancels an existing pending tap and is treated independently.
 
@@ -321,8 +321,8 @@ Behavior now:
 
 - Left Alt single tap = IME OFF after double-tap timeout.
 - Right Alt single tap = IME ON after double-tap timeout.
-- Left Alt double tap = standalone Left Alt.
-- Right Alt double tap = standalone Right Alt.
+- Second Left Alt down within timeout = cancel pending IME OFF and enter normal Left Alt mode.
+- Second Right Alt down within timeout = cancel pending IME ON and enter normal Right Alt mode.
 - Alt + another key = normal Alt shortcut.
 - Cross Alt = standalone Alt fallback.
 - Holding Alt alone does not emit standalone Alt.
