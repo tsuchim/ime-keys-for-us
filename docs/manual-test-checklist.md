@@ -73,6 +73,17 @@
 - [ ] Exit menu works.
 - [ ] Single-instance guard works.
 - [ ] Re-launching does not create duplicate hooks.
+- [ ] Fresh MSI install does not create HKCU Run value.
+- [ ] App starts manually from Start Menu.
+- [ ] Tray menu shows `Start at sign-in` unchecked initially.
+- [ ] Clicking `Start at sign-in` creates HKCU Run value.
+- [ ] Tray menu shows checked after enabling.
+- [ ] Log out/in or restart starts the app automatically.
+- [ ] Clicking `Start at sign-in` again removes HKCU Run value.
+- [ ] `--enable-startup` creates HKCU Run value.
+- [ ] `--disable-startup` removes HKCU Run value.
+- [ ] Uninstall removes installed files.
+- [ ] If HKCU Run value remains after uninstall, it is harmless but should be removed before uninstall by disabling startup.
 
 ## UIAccess / Elevation
 

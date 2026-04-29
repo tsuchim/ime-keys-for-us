@@ -326,3 +326,20 @@ Behavior now:
 - Alt + another key = normal Alt shortcut.
 - Cross Alt = standalone Alt fallback.
 - Holding Alt alone does not emit standalone Alt.
+
+## 18. Current-user Startup Registration
+
+Startup registration was added in the app, not the MSI.
+
+Applied changes:
+
+- Added `src/startup_registration.h` and `src/startup_registration.cpp`.
+- Added `Start at sign-in` to the tray menu.
+- Added current-user Run key management under `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`.
+- Used value name `ImeKeysForUS`.
+- Stored command line as `"<current exe path>" --startup`.
+- Added `--enable-startup` and `--disable-startup` command-line options.
+- Left `--startup` as a normal launch path marker.
+- Verified `--enable-startup` creates the HKCU Run value.
+- Verified `--disable-startup` removes the HKCU Run value.
+- Kept the per-machine MSI from writing HKCU Run by default.

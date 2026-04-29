@@ -40,6 +40,26 @@ DoubleTapMs=100
 
 The default is `100 ms`. Valid values are clamped to `100-500 ms`. Shorter values reduce IME switching delay; longer values make double-tap easier. Restart the app after editing settings in v0.1.0.
 
+## Start at Sign-in
+
+IME Keys for US does not enable startup automatically during MSI installation.
+
+To enable startup for the current user, launch the app, open the tray menu, and enable `Start at sign-in`.
+
+Alternatively:
+
+```powershell
+"C:\Program Files\ImeKeysForUS\ime-keys-for-us.exe" --enable-startup
+```
+
+To disable:
+
+```powershell
+"C:\Program Files\ImeKeysForUS\ime-keys-for-us.exe" --disable-startup
+```
+
+Startup is stored in the current user's `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` key as `"ime-keys-for-us.exe" --startup`.
+
 ## Installation Status
 
 v0.1.0 is the first native implementation. Installer packaging is prepared, but unsigned CI artifacts are acceptable for this release. Locally signed artifacts can be produced on a development machine that has the expected code signing certificate.

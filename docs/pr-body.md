@@ -10,6 +10,7 @@ Build initial native Win32 implementation of IME Keys for US v0.1.0.
 - Right Alt tap, then Right Alt down within timeout, cancels IME ON and enters normal Right Alt mode.
 - Left Alt / Right Alt with another key is preserved as a normal Alt shortcut.
 - Cross Alt fallback emits standalone Alt for the second Alt key.
+- Tray menu can toggle current-user `Start at sign-in`.
 
 ## Build
 
@@ -28,6 +29,7 @@ Build initial native Win32 implementation of IME Keys for US v0.1.0.
 - WiX v4 installer source is prepared under `installer/wix/`.
 - CI installs WiX v4.0.6 and builds the MSI artifact.
 - Installer target path is `C:\Program Files\ImeKeysForUS\`.
+- MSI does not register startup by default; startup is controlled by the app under the current user.
 
 ## Manual test checklist
 

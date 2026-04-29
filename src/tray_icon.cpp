@@ -1,6 +1,7 @@
 #include "tray_icon.h"
 
 #include "resource.h"
+#include "startup_registration.h"
 
 namespace {
 constexpr UINT kTrayIconId = 1;
@@ -72,6 +73,12 @@ void TrayIcon::ShowMenu(HWND hwnd) {
 
   AppendMenuW(menu, MF_STRING | MF_DISABLED, 0, L"IME Keys for US");
   AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
+  UINT startup_flags = MF_STRING;
+  if (IsStartupEnabled()) {
+    startup_flags |= MF_CHECKED;
+  }
+  AppendMenuW(menu, startup_flags, ID_TRAY_START_AT_SIGN_IN,
+              L"Start at sign-in");
   AppendMenuW(menu, MF_STRING, ID_TRAY_EXIT, L"Exit");
 
   POINT cursor{};

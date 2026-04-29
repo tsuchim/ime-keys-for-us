@@ -2,6 +2,7 @@
 
 #include "app_messages.h"
 #include "resource.h"
+#include "startup_registration.h"
 
 #include <windowsx.h>
 
@@ -104,6 +105,14 @@ LRESULT App::HandleMessage(HWND hwnd, UINT message, WPARAM wparam,
       }
       return 0;
     case WM_COMMAND:
+      if (LOWORD(wparam) == ID_TRAY_START_AT_SIGN_IN) {
+        if (IsStartupEnabled()) {
+          DisableStartup();
+        } else {
+          EnableStartup();
+        }
+        return 0;
+      }
       if (LOWORD(wparam) == ID_TRAY_EXIT) {
         PostQuitMessage(0);
         return 0;

@@ -26,6 +26,13 @@ If WiX is unavailable in CI, CI should continue producing the executable artifac
 
 v0.1.0 does not register auto-start from the MSI by default. This avoids mixing a per-machine Program Files install with an elevated MSI writing to the installing user's `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`.
 
+Startup is controlled by the app for the current interactive user. Use the tray menu item `Start at sign-in`, or run:
+
+```powershell
+"C:\Program Files\ImeKeysForUS\ime-keys-for-us.exe" --enable-startup
+"C:\Program Files\ImeKeysForUS\ime-keys-for-us.exe" --disable-startup
+```
+
 Manual startup options:
 
 - Put a shortcut to `C:\Program Files\ImeKeysForUS\ime-keys-for-us.exe` in the current user's Startup folder.

@@ -17,6 +17,7 @@ In scope for v0.1.0:
 - Same-key second Alt press fallback for normal Alt behavior.
 - Cross Alt fallback.
 - Tray icon with Exit.
+- Tray menu current-user startup toggle.
 - Single-instance guard.
 - INI-based double-tap timeout setting.
 
@@ -63,6 +64,30 @@ The startup order is:
 The tray icon is useful for Exit, but tray icon creation failure is not fatal. If the shell notification area is temporarily unavailable, the keyboard hook can still run.
 
 The double-tap timer is not a permanent polling timer. The hook posts `WM_APP_KEYBOARD_PENDING_CHANGED` when a pending tap starts or clears, and the app message loop arms a timer only while a pending tap exists.
+
+## Startup Registration
+
+The MSI does not register automatic startup. Startup is controlled by the app for the current interactive user.
+
+The tray menu includes `Start at sign-in`, which toggles:
+
+```text
+HKCU\Software\Microsoft\Windows\CurrentVersion\Run
+```
+
+Value name:
+
+```text
+ImeKeysForUS
+```
+
+Value data:
+
+```text
+"<current exe path>" --startup
+```
+
+The app also supports `--enable-startup` and `--disable-startup` command-line options. These commands write only to `HKEY_CURRENT_USER` and exit immediately.
 
 Out of scope for v0.1.0:
 

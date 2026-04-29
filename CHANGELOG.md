@@ -12,6 +12,7 @@
 - Added tray icon with Exit menu.
 - Added application icon resource and tray icon from `assets/ImeKeysForUS.png`.
 - Added application name header to the tray menu.
+- Added current-user `Start at sign-in` tray toggle and CLI options.
 - Added single-instance guard.
 - Added CMake build with optional signing and UIAccess manifest variant.
 - Added installer, winget, release, signing, UIAccess, and manual testing documentation.

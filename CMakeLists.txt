@@ -20,6 +20,8 @@ add_executable(ImeKeysForUS WIN32
   src/keyboard_hook.h
   src/settings.cpp
   src/settings.h
+  src/startup_registration.cpp
+  src/startup_registration.h
   src/ime_controller.cpp
   src/ime_controller.h
   src/tray_icon.cpp
