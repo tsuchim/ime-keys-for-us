@@ -11,6 +11,8 @@ class KeyboardHook {
   void Uninstall();
   void SetDoubleTapTimeout(DWORD timeout_ms);
   void TickPendingTap();
+  bool HasPendingTap() const;
+  DWORD PendingTapDelayMs() const;
 
  private:
   enum class AltKey {
@@ -51,7 +53,7 @@ class KeyboardHook {
   void BeginPendingTap(AltKey key, DWORD timestamp);
   void ClearPendingTap();
   void ResolveExpiredPendingTap(DWORD now);
-  bool HasPendingTap() const;
+  void NotifyPendingTapChanged();
   bool IsPendingTapSameKeyWithinTimeout(AltKey key, DWORD now) const;
   bool IsPendingTapExpired(DWORD now) const;
   void ReplayAltDown(AltKey key);

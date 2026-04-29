@@ -2,7 +2,9 @@
 
 #include <shlobj.h>
 
-#include <cwchar>
+#include <cwctype>
+#include <iterator>
+#include <string>
 
 namespace {
 constexpr wchar_t kSettingsDirectory[] = L"ImeKeysForUS";
@@ -32,6 +34,41 @@ bool GetSettingsPath(wchar_t* path, DWORD path_count) {
   CoTaskMemFree(appdata);
   return written > 0;
 }
+
+std::wstring Trim(const wchar_t* value) {
+  std::wstring text = value != nullptr ? value : L"";
+  size_t first = 0;
+  while (first < text.size() && iswspace(text[first])) {
+    ++first;
+  }
+
+  size_t last = text.size();
+  while (last > first && iswspace(text[last - 1])) {
+    --last;
+  }
+
+  return text.substr(first, last - first);
+}
+
+bool TryParseStrictInt(const std::wstring& text, int* value) {
+  if (text.empty()) {
+    return false;
+  }
+
+  int parsed = 0;
+  for (wchar_t ch : text) {
+    if (ch < L'0' || ch > L'9') {
+      return false;
+    }
+    parsed = parsed * 10 + (ch - L'0');
+    if (parsed > 10000) {
+      return false;
+    }
+  }
+
+  *value = parsed;
+  return true;
+}
 }  // namespace
 
 AppSettings LoadSettings() {
@@ -42,8 +79,15 @@ AppSettings LoadSettings() {
     return settings;
   }
 
-  int value = GetPrivateProfileIntW(L"Keyboard", L"DoubleTapMs",
-                                    DEFAULT_ALT_DOUBLE_TAP_MS, path);
-  settings.alt_double_tap_ms = ClampDoubleTapMs(value);
+  wchar_t value_text[32]{};
+  DWORD chars = GetPrivateProfileStringW(L"Keyboard", L"DoubleTapMs", L"",
+                                         value_text,
+                                         static_cast<DWORD>(std::size(value_text)),
+                                         path);
+  int value = 0;
+  std::wstring trimmed = Trim(value_text);
+  if (chars > 0 && TryParseStrictInt(trimmed, &value)) {
+    settings.alt_double_tap_ms = ClampDoubleTapMs(value);
+  }
   return settings;
 }

@@ -48,6 +48,22 @@ void KeyboardHook::TickPendingTap() {
   }
 }
 
+bool KeyboardHook::HasPendingTap() const {
+  return pending_tap_.key != AltKey::None;
+}
+
+DWORD KeyboardHook::PendingTapDelayMs() const {
+  if (!HasPendingTap()) {
+    return 0;
+  }
+
+  DWORD elapsed = GetTickCount() - pending_tap_.started_at;
+  if (elapsed >= double_tap_timeout_ms_) {
+    return 1;
+  }
+  return double_tap_timeout_ms_ - elapsed;
+}
+
 LRESULT CALLBACK KeyboardHook::HookProc(int code, WPARAM wparam,
                                         LPARAM lparam) {
   if (code < 0 || instance_ == nullptr) {
@@ -100,10 +116,10 @@ bool KeyboardHook::HandleKeyDown(const KBDLLHOOKSTRUCT& event, AltKey key) {
   }
 
   if (gesture_.state == GestureState::Idle) {
+    ResolveExpiredPendingTap(now);
     if (HasPendingTap() && pending_tap_.key != key) {
       ClearPendingTap();
     }
-    ResolveExpiredPendingTap(now);
     BeginAltGesture(key, now);
     MarkConsumeUp(key);
     return true;
@@ -176,10 +192,15 @@ void KeyboardHook::ResetGesture() {
 void KeyboardHook::BeginPendingTap(AltKey key, DWORD timestamp) {
   pending_tap_.key = key;
   pending_tap_.started_at = timestamp;
+  NotifyPendingTapChanged();
 }
 
 void KeyboardHook::ClearPendingTap() {
+  if (!HasPendingTap()) {
+    return;
+  }
   pending_tap_ = {};
+  NotifyPendingTapChanged();
 }
 
 void KeyboardHook::ResolveExpiredPendingTap(DWORD now) {
@@ -190,8 +211,10 @@ void KeyboardHook::ResolveExpiredPendingTap(DWORD now) {
   }
 }
 
-bool KeyboardHook::HasPendingTap() const {
-  return pending_tap_.key != AltKey::None;
+void KeyboardHook::NotifyPendingTapChanged() {
+  if (notify_window_ != nullptr) {
+    PostMessageW(notify_window_, WM_APP_KEYBOARD_PENDING_CHANGED, 0, 0);
+  }
 }
 
 bool KeyboardHook::IsPendingTapSameKeyWithinTimeout(AltKey key,

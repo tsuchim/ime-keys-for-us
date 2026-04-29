@@ -7,8 +7,7 @@
 
 namespace {
 constexpr wchar_t kWindowClassName[] = L"ImeKeysForUS.HiddenWindow";
-constexpr UINT_PTR kKeyboardTimerId = 1;
-constexpr UINT kTimerIntervalMs = 20;
+constexpr UINT_PTR kDoubleTapTimerId = 1;
 }  // namespace
 
 App::App(HINSTANCE instance) : instance_(instance), tray_icon_(instance) {}
@@ -16,7 +15,7 @@ App::App(HINSTANCE instance) : instance_(instance), tray_icon_(instance) {}
 App::~App() {
   keyboard_hook_.Uninstall();
   if (hwnd_ != nullptr) {
-    KillTimer(hwnd_, kKeyboardTimerId);
+    KillTimer(hwnd_, kDoubleTapTimerId);
   }
   tray_icon_.Remove();
 }
@@ -45,7 +44,6 @@ bool App::Initialize() {
     return false;
   }
 
-  SetTimer(hwnd_, kKeyboardTimerId, kTimerIntervalMs, nullptr);
   tray_icon_.Add(hwnd_);
   return true;
 }
@@ -87,6 +85,11 @@ LRESULT App::HandleMessage(HWND hwnd, UINT message, WPARAM wparam,
     return 0;
   }
 
+  if (message == WM_APP_KEYBOARD_PENDING_CHANGED) {
+    UpdateKeyboardTimer(hwnd);
+    return 0;
+  }
+
   if (message == TrayIcon::MessageId()) {
     tray_icon_.HandleMessage(hwnd_, lparam);
     return 0;
@@ -94,8 +97,10 @@ LRESULT App::HandleMessage(HWND hwnd, UINT message, WPARAM wparam,
 
   switch (message) {
     case WM_TIMER:
-      if (wparam == kKeyboardTimerId) {
+      if (wparam == kDoubleTapTimerId) {
+        KillTimer(hwnd, kDoubleTapTimerId);
         keyboard_hook_.TickPendingTap();
+        UpdateKeyboardTimer(hwnd);
       }
       return 0;
     case WM_COMMAND:
@@ -110,4 +115,12 @@ LRESULT App::HandleMessage(HWND hwnd, UINT message, WPARAM wparam,
   }
 
   return DefWindowProcW(hwnd, message, wparam, lparam);
+}
+
+void App::UpdateKeyboardTimer(HWND hwnd) {
+  KillTimer(hwnd, kDoubleTapTimerId);
+  if (keyboard_hook_.HasPendingTap()) {
+    SetTimer(hwnd, kDoubleTapTimerId, keyboard_hook_.PendingTapDelayMs(),
+             nullptr);
+  }
 }

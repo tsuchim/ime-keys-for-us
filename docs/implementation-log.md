@@ -309,6 +309,8 @@ Applied changes:
 - Added `AppSettings` and startup loading from `%APPDATA%\ImeKeysForUS\settings.ini`.
 - Added `DEFAULT_ALT_DOUBLE_TAP_MS = 200`.
 - Added accepted setting clamp range `100-500 ms`.
+- Changed timer handling so the app arms a timer only while a pending tap exists.
+- Changed `DoubleTapMs` parsing to accept only strict numeric values; invalid values use the default.
 - Changed first Alt tap to create a pending tap instead of immediately changing IME.
 - Changed timeout resolution to post the existing IME ON/OFF app messages.
 - Changed same-key double-tap within timeout to emit standalone Alt without changing IME state.

@@ -35,7 +35,7 @@ IME ON/OFF is not executed directly from the hook callback. When an Alt tap time
 
 Standalone Alt is emitted by double-tapping the same Alt key within the configured timeout. The first tap does not change IME immediately. If the timeout expires without a second same-key tap, the pending tap becomes an IME request.
 
-If an opposite Alt gesture starts while a pending tap exists, the pending tap is canceled and the new physical gesture is treated independently. This avoids a delayed IME side effect while the user is starting another Alt gesture.
+If an opposite Alt gesture starts while a pending tap exists, an already-expired pending tap is resolved first. A still-active pending tap is canceled and the new physical gesture is treated independently. This avoids a delayed IME side effect while the user is starting another Alt gesture.
 
 Settings are loaded once at startup from:
 
@@ -56,10 +56,11 @@ The startup order is:
 
 1. Create the hidden message window.
 2. Install the keyboard hook.
-3. Start the keyboard timer that resolves pending double-tap timeouts.
-4. Add the tray icon.
+3. Add the tray icon.
 
 The tray icon is useful for Exit, but tray icon creation failure is not fatal. If the shell notification area is temporarily unavailable, the keyboard hook can still run.
+
+The double-tap timer is not a permanent polling timer. The hook posts `WM_APP_KEYBOARD_PENDING_CHANGED` when a pending tap starts or clears, and the app message loop arms a timer only while a pending tap exists.
 
 Out of scope for v0.1.0:
 

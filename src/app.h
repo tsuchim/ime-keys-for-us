@@ -20,6 +20,7 @@ class App {
                                      LPARAM lparam);
   LRESULT HandleMessage(HWND hwnd, UINT message, WPARAM wparam,
                         LPARAM lparam);
+  void UpdateKeyboardTimer(HWND hwnd);
 
   HINSTANCE instance_;
   HWND hwnd_ = nullptr;

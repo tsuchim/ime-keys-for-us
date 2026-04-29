@@ -34,9 +34,10 @@ DoubleTapMs=200
 5. If a second same-key tap completes before `DoubleTapMs`, the pending IME operation is canceled, standalone Alt is emitted, and IME state is unchanged.
 6. If `PendingTap` expires, the hook posts an IME request to the app hidden window: Left Alt requests IME OFF and Right Alt requests IME ON.
 
-If an opposite Alt gesture starts while a pending tap exists, the pending tap is canceled and the new physical gesture is treated independently. This avoids a delayed IME side effect while another Alt gesture is starting.
+If an opposite Alt gesture starts while a pending tap exists, an already-expired pending tap is resolved first. A still-active pending tap is canceled and the new physical gesture is treated independently. This avoids a delayed IME side effect while another Alt gesture is starting.
+
+The app uses an event-driven timer for pending taps. The timer is armed only while a pending tap exists and is killed when the pending tap is resolved or canceled.
 
 Synthetic input is marked with `dwExtraInfo` and ignored by the hook to prevent recursion.
 
 The hook does not call IMM APIs directly. `App::HandleMessage()` performs IME control from the normal message loop after receiving the posted request.
-
