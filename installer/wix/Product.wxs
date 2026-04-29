@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package
+    Name="IME Keys for US"
+    Manufacturer="tsuchim"
+    Version="0.1.0"
+    UpgradeCode="C79D216B-8E33-45BF-976B-F52825D3A8E6"
+    Scope="perMachine">
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of IME Keys for US is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Feature Id="Main" Title="IME Keys for US" Level="1">
+      <ComponentGroupRef Id="AppComponents" />
+    </Feature>
+  </Package>
+
+  <Fragment>
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="ImeKeysForUS" />
+    </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Directory Id="ApplicationProgramsFolder" Name="IME Keys for US" />
+    </StandardDirectory>
+  </Fragment>
+
+  <Fragment>
+    <ComponentGroup Id="AppComponents" Directory="INSTALLFOLDER">
+      <Component Id="AppExecutable" Bitness="always64">
+        <File Id="ImeKeysForUSExe" Source="$(var.SourceDir)\ime-keys-for-us.exe" KeyPath="yes" />
+        <Shortcut Id="StartMenuShortcut"
+                  Directory="ApplicationProgramsFolder"
+                  Name="IME Keys for US"
+                  WorkingDirectory="INSTALLFOLDER"
+                  Advertise="yes" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>

@@ -14,7 +14,8 @@ src/ime_controller.h
 src/ime_controller.cpp
 ```
 
+The low-level keyboard hook does not call `ImeController` directly. It posts an app-defined message to the hidden window, and the normal Win32 message loop calls `ImeController::SetOpenStatus()`.
+
 ## TSF
 
 TSF is not implemented in v0.1.0. A future version may add TSF-based IME state control if IMM-based control is insufficient for some IMEs or applications.
-

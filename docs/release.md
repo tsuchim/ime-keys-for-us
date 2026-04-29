@@ -29,6 +29,12 @@ IME Keys for US v0.1.0
 7. Attach executable zip if useful.
 8. Review before publishing.
 
+Before packaging or uninstall testing, disable current-user startup if it was enabled:
+
+```powershell
+"C:\Program Files\ImeKeysForUS\ime-keys-for-us.exe" --disable-startup
+```
+
 Do not publish automatically without review.
 
 ## PR Body Template
@@ -50,4 +56,3 @@ Do not publish automatically without review.
 
 ## Release notes draft
 ```
-

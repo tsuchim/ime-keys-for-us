@@ -6,6 +6,7 @@ dist/
 
 # Visual Studio / CMake user files
 .vs/
+.codex/
 *.user
 *.suo
 *.VC.db
@@ -20,4 +21,3 @@ CMakeUserPresets.json
 *.cer
 *.crt
 *.key
-

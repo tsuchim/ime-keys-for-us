@@ -4,18 +4,20 @@ Build initial native Win32 implementation of IME Keys for US v0.1.0.
 
 ## Implemented behavior
 
-- Left Alt tap sets IME OFF.
-- Right Alt tap sets IME ON.
+- Left Alt single tap sets IME OFF after the double-tap timeout.
+- Right Alt single tap sets IME ON after the double-tap timeout.
+- Left Alt tap, then Left Alt down within timeout, cancels IME OFF and enters normal Left Alt mode.
+- Right Alt tap, then Right Alt down within timeout, cancels IME ON and enters normal Right Alt mode.
 - Left Alt / Right Alt with another key is preserved as a normal Alt shortcut.
-- Left Alt / Right Alt long press emits standalone Alt.
 - Cross Alt fallback emits standalone Alt for the second Alt key.
-- Double-tap behavior is intentionally not implemented.
+- Tray menu can toggle current-user `Start at sign-in`.
 
 ## Build
 
 - CMake project targeting C++17.
 - Visual Studio 2022 x64 Release build verified locally.
 - Output: `build\Release\ime-keys-for-us.exe`.
+- PR CI smoke-tests startup registration and MSI install/uninstall.
 
 ## Signing
 
@@ -26,8 +28,9 @@ Build initial native Win32 implementation of IME Keys for US v0.1.0.
 ## Installer
 
 - WiX v4 installer source is prepared under `installer/wix/`.
-- CI skips installer build when WiX is unavailable.
+- CI installs WiX v4.0.6 and builds the MSI artifact.
 - Installer target path is `C:\Program Files\ImeKeysForUS\`.
+- MSI does not register startup by default; startup is controlled by the app under the current user.
 
 ## Manual test checklist
 
@@ -45,9 +48,7 @@ Build initial native Win32 implementation of IME Keys for US v0.1.0.
 - Right Alt may behave differently on layouts that treat it as AltGr.
 - AX keyboard layouts may need separate handling in a future release.
 - No settings UI yet.
-- No double-tap behavior yet.
 
 ## Release notes draft
 
-Initial native Win32 release of IME Keys for US. This release provides explicit IME OFF on Left Alt tap and IME ON on Right Alt tap for Japanese users on US keyboards, while preserving normal Alt shortcuts and providing long-press and cross Alt fallbacks for standalone Alt.
-
+Initial native Win32 release of IME Keys for US. This release provides explicit IME OFF on Left Alt single tap and IME ON on Right Alt single tap after a configurable double-tap timeout, while preserving normal Alt shortcuts and treating the second same-key Alt press within the timeout as a request for normal Alt behavior.
