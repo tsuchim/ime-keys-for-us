@@ -20,5 +20,6 @@ class TrayIcon {
   HINSTANCE instance_;
   NOTIFYICONDATAW nid_{};
   bool added_ = false;
+  HICON icon_ = nullptr;
+  bool owns_icon_ = false;
 };
-

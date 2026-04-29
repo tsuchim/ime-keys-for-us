@@ -18,13 +18,22 @@ UINT TrayIcon::MessageId() {
 }
 
 bool TrayIcon::Add(HWND hwnd) {
+  icon_ = static_cast<HICON>(
+      LoadImageW(instance_, MAKEINTRESOURCEW(IDI_APP_ICON), IMAGE_ICON,
+                 GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON),
+                 LR_DEFAULTCOLOR));
+  owns_icon_ = icon_ != nullptr;
+  if (icon_ == nullptr) {
+    icon_ = LoadIconW(nullptr, IDI_APPLICATION);
+  }
+
   nid_ = {};
   nid_.cbSize = sizeof(nid_);
   nid_.hWnd = hwnd;
   nid_.uID = kTrayIconId;
   nid_.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
   nid_.uCallbackMessage = kTrayMessage;
-  nid_.hIcon = LoadIconW(nullptr, IDI_APPLICATION);
+  nid_.hIcon = icon_;
   wcscpy_s(nid_.szTip, L"IME Keys for US");
 
   added_ = Shell_NotifyIconW(NIM_ADD, &nid_) != FALSE;
@@ -40,6 +49,11 @@ void TrayIcon::Remove() {
     Shell_NotifyIconW(NIM_DELETE, &nid_);
     added_ = false;
   }
+  if (icon_ != nullptr && owns_icon_) {
+    DestroyIcon(icon_);
+  }
+  icon_ = nullptr;
+  owns_icon_ = false;
 }
 
 void TrayIcon::HandleMessage(HWND hwnd, LPARAM lparam) {
@@ -56,6 +70,8 @@ void TrayIcon::ShowMenu(HWND hwnd) {
     return;
   }
 
+  AppendMenuW(menu, MF_STRING | MF_DISABLED, 0, L"IME Keys for US");
+  AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
   AppendMenuW(menu, MF_STRING, ID_TRAY_EXIT, L"Exit");
 
   POINT cursor{};
