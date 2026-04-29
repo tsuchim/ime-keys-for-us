@@ -46,7 +46,7 @@ jobs:
       - name: Build installer
         shell: pwsh
         run: |
-          wix build installer/wix/Product.wxs -d SourceDir=dist -o "dist/IME-Keys-for-US-$env:RELEASE_VERSION-x64-unsigned.msi"
+          wix build installer/wix/Product.wxs -arch x64 -d SourceDir=dist -o "dist/IME-Keys-for-US-$env:RELEASE_VERSION-x64-unsigned.msi"
           Get-FileHash "dist/IME-Keys-for-US-$env:RELEASE_VERSION-x64-unsigned.msi" -Algorithm SHA256 | Format-List | Out-File -Append dist/SHA256SUMS.txt
 
       - name: Upload artifacts to GitHub Release

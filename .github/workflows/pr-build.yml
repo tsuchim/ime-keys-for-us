@@ -79,7 +79,7 @@ jobs:
           if (-not $exe) {
             throw "Executable not found."
           }
-          wix build installer/wix/Product.wxs -d SourceDir=$($exe.Directory.FullName) -o "IME-Keys-for-US-$env:PROJECT_VERSION-x64-unsigned.msi"
+          wix build installer/wix/Product.wxs -arch x64 -d SourceDir=$($exe.Directory.FullName) -o "IME-Keys-for-US-$env:PROJECT_VERSION-x64-unsigned.msi"
 
       - name: Smoke test installer
         shell: pwsh
