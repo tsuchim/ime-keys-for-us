@@ -20,10 +20,12 @@ bool KeyboardHook::Install(HWND notify_window) {
   instance_ = this;
   hook_ = SetWindowsHookExW(WH_KEYBOARD_LL, KeyboardHook::HookProc, nullptr, 0);
   if (hook_ == nullptr) {
+    last_error_ = GetLastError();
     instance_ = nullptr;
     notify_window_ = nullptr;
     return false;
   }
+  last_error_ = ERROR_SUCCESS;
   return true;
 }
 
@@ -36,6 +38,10 @@ void KeyboardHook::Uninstall() {
     instance_ = nullptr;
   }
   notify_window_ = nullptr;
+}
+
+DWORD KeyboardHook::LastError() const {
+  return last_error_;
 }
 
 void KeyboardHook::SetDoubleTapTimeout(DWORD timeout_ms) {

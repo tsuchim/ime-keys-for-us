@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.3
+
+- Linked the MSVC runtime statically for release builds.
+- Added startup diagnostics under `%LOCALAPPDATA%\ImeKeysForUS\ime-keys-for-us.log`.
+- Added visible startup error messages for fatal initialization failures and tray icon add failures.
+- Clarified README guidance for tray behavior and systems without a Japanese IME.
+
 ## 0.1.2
 
 - Fixed the MSI package version to follow the release version passed to WiX.

@@ -9,6 +9,7 @@ class KeyboardHook {
 
   bool Install(HWND notify_window);
   void Uninstall();
+  DWORD LastError() const;
   void SetDoubleTapTimeout(DWORD timeout_ms);
   void TickPendingTap();
   bool HasPendingTap() const;
@@ -73,6 +74,7 @@ class KeyboardHook {
 
   HHOOK hook_ = nullptr;
   HWND notify_window_ = nullptr;
+  DWORD last_error_ = ERROR_SUCCESS;
   Gesture gesture_;
   PendingTap pending_tap_;
   DWORD double_tap_timeout_ms_ = 100;

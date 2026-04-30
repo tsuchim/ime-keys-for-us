@@ -1,5 +1,6 @@
 #include "app.h"
 #include "single_instance.h"
+#include "diagnostics.h"
 #include "startup_registration.h"
 
 #include <windows.h>
@@ -27,15 +28,22 @@ bool HasCommandLineFlag(PWSTR command_line, const wchar_t* flag) {
 }  // namespace
 
 int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE, PWSTR command_line, int) {
+  LogStartupEvent(L"Process started.");
+
   if (HasCommandLineFlag(command_line, L"--enable-startup")) {
+    LogStartupEvent(L"Processing --enable-startup.");
     return EnableStartup() ? 0 : 1;
   }
 
   if (HasCommandLineFlag(command_line, L"--disable-startup")) {
+    LogStartupEvent(L"Processing --disable-startup.");
     return DisableStartup() ? 0 : 1;
   }
 
   SingleInstance single_instance(L"Local\\ImeKeysForUS.SingleInstance");
+  LogStartupEvent(single_instance.IsPrimary()
+                      ? L"Single-instance check passed; this is primary."
+                      : L"Single-instance check found an existing instance.");
   if (!single_instance.IsPrimary()) {
     return 0;
   }
