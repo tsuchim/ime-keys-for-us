@@ -93,12 +93,12 @@ void AppendLogLine(const std::wstring& line) {
       WideCharToMultiByte(CP_UTF8, 0, text.c_str(), -1, nullptr, 0, nullptr,
                           nullptr);
   if (bytes_needed > 1) {
-    std::string utf8(static_cast<size_t>(bytes_needed - 1), '\0');
+    std::string utf8(static_cast<size_t>(bytes_needed), '\0');
     WideCharToMultiByte(CP_UTF8, 0, text.c_str(), -1, utf8.data(),
                         bytes_needed, nullptr, nullptr);
     DWORD written = 0;
-    WriteFile(file, utf8.data(), static_cast<DWORD>(utf8.size()), &written,
-              nullptr);
+    WriteFile(file, utf8.data(), static_cast<DWORD>(bytes_needed - 1),
+              &written, nullptr);
   }
   CloseHandle(file);
 }
