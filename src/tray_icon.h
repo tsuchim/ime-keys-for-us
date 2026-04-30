@@ -9,6 +9,7 @@ class TrayIcon {
   ~TrayIcon();
 
   bool Add(HWND hwnd);
+  DWORD LastError() const;
   void Remove();
   void HandleMessage(HWND hwnd, LPARAM lparam);
 
@@ -22,4 +23,5 @@ class TrayIcon {
   bool added_ = false;
   HICON icon_ = nullptr;
   bool owns_icon_ = false;
+  DWORD last_error_ = ERROR_SUCCESS;
 };

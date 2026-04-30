@@ -2,6 +2,7 @@
 
 #include "app_messages.h"
 #include "resource.h"
+#include "diagnostics.h"
 #include "startup_registration.h"
 
 #include <windowsx.h>
@@ -22,6 +23,8 @@ App::~App() {
 }
 
 bool App::Initialize() {
+  LogStartupEvent(L"App initialization started.");
+
   WNDCLASSEXW wc{};
   wc.cbSize = sizeof(wc);
   wc.lpfnWndProc = App::WindowProc;
@@ -29,33 +32,49 @@ bool App::Initialize() {
   wc.lpszClassName = kWindowClassName;
 
   if (RegisterClassExW(&wc) == 0) {
-    return false;
+    return FailStartup(L"RegisterClassExW failed.", GetLastError());
   }
+  LogStartupEvent(L"Window class registered.");
 
   hwnd_ = CreateWindowExW(0, kWindowClassName, L"IME Keys for US", 0, 0, 0, 0,
                           0, HWND_MESSAGE, nullptr, instance_, this);
   if (hwnd_ == nullptr) {
-    return false;
+    return FailStartup(L"CreateWindowExW failed.", GetLastError());
   }
+  LogStartupEvent(L"Message-only window created.");
 
   settings_ = LoadSettings();
+  LogStartupEvent(L"Settings loaded.");
   keyboard_hook_.SetDoubleTapTimeout(settings_.alt_double_tap_ms);
 
   if (!keyboard_hook_.Install(hwnd_)) {
-    return false;
+    return FailStartup(L"SetWindowsHookExW(WH_KEYBOARD_LL) failed.",
+                       keyboard_hook_.LastError());
   }
+  LogStartupEvent(L"Keyboard hook installed.");
 
-  tray_icon_.Add(hwnd_);
+  LogStartupEvent(L"Tray icon add attempted.");
+  if (tray_icon_.Add(hwnd_)) {
+    LogStartupEvent(L"Tray icon added.");
+  } else {
+    ShowTrayIconStartupWarning(tray_icon_.LastError());
+  }
   return true;
 }
 
 int App::Run() {
+  LogStartupEvent(L"App message loop entered.");
   MSG message{};
   while (GetMessageW(&message, nullptr, 0, 0) > 0) {
     TranslateMessage(&message);
     DispatchMessageW(&message);
   }
   return static_cast<int>(message.wParam);
+}
+
+bool App::FailStartup(const wchar_t* stage, DWORD error) {
+  ShowFatalStartupError(stage, error);
+  return false;
 }
 
 LRESULT CALLBACK App::WindowProc(HWND hwnd, UINT message, WPARAM wparam,

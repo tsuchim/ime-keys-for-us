@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(ImeKeysForUS VERSION 0.1.2 LANGUAGES CXX RC)
+project(ImeKeysForUS VERSION 0.1.3 LANGUAGES CXX RC)
 
 set(IME_KEYS_VERSION_4 "${PROJECT_VERSION}.0")
 
@@ -22,6 +22,8 @@ add_executable(ImeKeysForUS WIN32
   src/keyboard_hook.h
   src/settings.cpp
   src/settings.h
+  src/diagnostics.cpp
+  src/diagnostics.h
   src/startup_registration.cpp
   src/startup_registration.h
   src/ime_controller.cpp
@@ -60,6 +62,9 @@ target_link_libraries(ImeKeysForUS PRIVATE
 
 if(MSVC)
   target_compile_options(ImeKeysForUS PRIVATE /W4 /permissive-)
+  set_property(TARGET ImeKeysForUS PROPERTY
+    MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>"
+  )
 endif()
 
 configure_file(

@@ -16,6 +16,7 @@ class App {
   int Run();
 
  private:
+  bool FailStartup(const wchar_t* stage, DWORD error);
   static LRESULT CALLBACK WindowProc(HWND hwnd, UINT message, WPARAM wparam,
                                      LPARAM lparam);
   LRESULT HandleMessage(HWND hwnd, UINT message, WPARAM wparam,
