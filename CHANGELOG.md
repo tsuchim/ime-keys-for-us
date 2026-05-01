@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.1.3
+
+- Linked the MSVC runtime statically for release builds.
+- Added startup diagnostics under `%LOCALAPPDATA%\ImeKeysForUS\ime-keys-for-us.log`.
+- Added visible startup error messages for fatal initialization failures and tray icon add failures.
+- Clarified README guidance for tray behavior and systems without a Japanese IME.
+
+## 0.1.2
+
+- Fixed the MSI package version to follow the release version passed to WiX.
+- Clarified winget wording while publication is still under review.
+- Prepared the release for locally signed public artifacts.
+
+## 0.1.1
+
+- Published locally Authenticode-signed distribution artifacts.
+- Documented that the signing certificate is a personal `CN=tsuchim` code-signing certificate, not a public CA-trusted certificate.
+- Added GitHub funding metadata.
+
 ## 0.1.0
 
 - Added native Win32 application skeleton.

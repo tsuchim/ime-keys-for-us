@@ -6,6 +6,62 @@ It maps Left Alt and Right Alt to explicit IME OFF and IME ON behavior. It avoid
 
 This project is a clean native implementation. It does not include AutoHotkey or code copied from `alt-ime-ahk`.
 
+## What this app does
+
+IME Keys for US is a small Windows tray utility for people who type Japanese on a US keyboard.
+
+It is not a text editor or a keyboard layout. It does not show a main window. After launch, it runs in the notification area / system tray.
+
+The goal is to avoid IME toggle behavior and provide explicit IME ON / OFF keys:
+
+- Left Alt: IME OFF / alphanumeric input
+- Right Alt: IME ON / Japanese input
+
+When moving between apps and text fields, users often need to remember the current IME state. This utility reduces that burden by making English and Japanese input modes explicit.
+
+## What appears after launch
+
+When the app starts normally, an icon appears in the Windows notification area / system tray.
+
+No main window is shown.
+
+Right-clicking the tray icon opens a menu with:
+
+- Start at sign-in
+- Exit
+
+If the icon is not visible, also check the hidden notification icons area.
+
+However, if no tray icon appears and Alt key presses have no effect, that is not expected. Starting with v0.1.3, startup diagnostics are written to:
+
+```text
+%LOCALAPPDATA%\ImeKeysForUS\ime-keys-for-us.log
+```
+
+Fatal initialization failures also show a message box.
+
+## Behavior on systems without a Japanese IME
+
+The main function of this app is to explicitly switch a Japanese IME ON and OFF.
+
+On systems where a Japanese IME is not installed or not active, pressing Left Alt or Right Alt may not produce an obvious visible change.
+
+Even in that case, the tray icon should still appear if the app started successfully.
+
+If the tray icon does not appear, treat it as a startup issue rather than an IME-state issue.
+
+## Example usage check
+
+On a system with a Japanese IME, such as Microsoft IME for Japanese:
+
+1. Launch IME Keys for US.
+2. Confirm that the tray icon appears.
+3. Open a text field, such as Notepad.
+4. Make sure a Japanese IME is available.
+5. Press Right Alt and confirm that Japanese input is enabled.
+6. Press Left Alt and confirm that alphanumeric input is enabled.
+7. Right-click the tray icon and choose Exit to quit the app.
+
 ## Behavior
 
 | Input | Behavior |
@@ -36,7 +92,7 @@ Example:
 DoubleTapMs=100
 ```
 
-The default is `100 ms`, clamped to `100-500 ms`. Restart the app after editing settings in v0.1.0.
+The default is `100 ms`, clamped to `100-500 ms`. Restart the app after editing settings in v0.1.x.
 
 ## Start at Sign-in
 
@@ -56,14 +112,21 @@ To disable:
 "C:\Program Files\ImeKeysForUS\ime-keys-for-us.exe" --disable-startup
 ```
 
+## Code signing
+
+The v0.1.3 distribution `exe` and `MSI` are Authenticode-signed with a local `CN=tsuchim` code-signing certificate.
+
+This is a personal open-source project and the certificate is not a public CA-trusted code-signing certificate. Windows SmartScreen or publisher warnings may still appear depending on the environment.
+
+The signature is provided so users can verify that the distributed artifacts have not been modified after signing. If/when the app is distributed through winget, the installer is also verified by the SHA256 hash in the manifest. Winget submission/publication is manual and may not be available at all times.
+
 ## Known Limitations
 
 - IME control uses IMM first and may not work perfectly with every IME/application combination.
 - TSF support is not implemented yet.
 - Elevated application support requires future UIAccess signed-build validation.
-- CI artifacts may be unsigned.
-- Microsoft Store distribution is out of scope for v0.1.0.
-- winget submission is prepared but not automatic.
+- CI artifacts may be unsigned. The preferred v0.1.3 distribution artifacts are locally signed.
+- Microsoft Store distribution is out of scope for v0.1.x.
 - Right Alt may behave differently on layouts that treat it as AltGr.
 - There is no settings UI yet.
 

@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(ImeKeysForUS VERSION 0.1.0 LANGUAGES CXX RC)
+project(ImeKeysForUS VERSION 0.1.3 LANGUAGES CXX RC)
+
+set(IME_KEYS_VERSION_4 "${PROJECT_VERSION}.0")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -20,6 +22,8 @@ add_executable(ImeKeysForUS WIN32
   src/keyboard_hook.h
   src/settings.cpp
   src/settings.h
+  src/diagnostics.cpp
+  src/diagnostics.h
   src/startup_registration.cpp
   src/startup_registration.h
   src/ime_controller.cpp
@@ -43,6 +47,10 @@ target_compile_definitions(ImeKeysForUS PRIVATE
   _UNICODE
   WIN32_LEAN_AND_MEAN
   NOMINMAX
+  IME_KEYS_VERSION_MAJOR=${PROJECT_VERSION_MAJOR}
+  IME_KEYS_VERSION_MINOR=${PROJECT_VERSION_MINOR}
+  IME_KEYS_VERSION_PATCH=${PROJECT_VERSION_PATCH}
+  IME_KEYS_VERSION_STRING="${IME_KEYS_VERSION_4}"
 )
 
 target_link_libraries(ImeKeysForUS PRIVATE
@@ -54,11 +62,26 @@ target_link_libraries(ImeKeysForUS PRIVATE
 
 if(MSVC)
   target_compile_options(ImeKeysForUS PRIVATE /W4 /permissive-)
+  set_property(TARGET ImeKeysForUS PROPERTY
+    MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>"
+  )
 endif()
 
-set(_manifest "${CMAKE_CURRENT_SOURCE_DIR}/src/app.manifest")
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/app.manifest.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/generated/app.manifest"
+  @ONLY
+)
+
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/app-uiaccess.manifest.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/generated/app-uiaccess.manifest"
+  @ONLY
+)
+
+set(_manifest "${CMAKE_CURRENT_BINARY_DIR}/generated/app.manifest")
 if(IME_KEYS_UIACCESS)
-  set(_manifest "${CMAKE_CURRENT_SOURCE_DIR}/src/app-uiaccess.manifest")
+  set(_manifest "${CMAKE_CURRENT_BINARY_DIR}/generated/app-uiaccess.manifest")
 endif()
 
 if(MSVC)

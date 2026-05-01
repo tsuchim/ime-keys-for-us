@@ -3,7 +3,7 @@
   <Package
     Name="IME Keys for US"
     Manufacturer="tsuchim"
-    Version="0.1.0"
+    Version="$(var.ProductVersion)"
     UpgradeCode="C79D216B-8E33-45BF-976B-F52825D3A8E6"
     Scope="perMachine">
 

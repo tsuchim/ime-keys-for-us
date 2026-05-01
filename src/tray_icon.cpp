@@ -38,11 +38,16 @@ bool TrayIcon::Add(HWND hwnd) {
   wcscpy_s(nid_.szTip, L"IME Keys for US");
 
   added_ = Shell_NotifyIconW(NIM_ADD, &nid_) != FALSE;
+  last_error_ = added_ ? ERROR_SUCCESS : GetLastError();
   if (added_) {
     nid_.uVersion = NOTIFYICON_VERSION_4;
     Shell_NotifyIconW(NIM_SETVERSION, &nid_);
   }
   return added_;
+}
+
+DWORD TrayIcon::LastError() const {
+  return last_error_;
 }
 
 void TrayIcon::Remove() {
