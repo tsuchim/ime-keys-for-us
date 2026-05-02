@@ -36,7 +36,7 @@ WiX v4.0.6 is used in CI.
 Local MSI build example:
 
 ```powershell
-build\wix4\wix.exe build installer\wix\Product.wxs -arch x64 -d SourceDir=build\Release -d ProductVersion=0.1.3 -o build\IME-Keys-for-US-0.1.3-x64.msi
+build\wix4\wix.exe build installer\wix\Product.wxs -arch x64 -d SourceDir=build\Release -d ProductVersion=0.1.4 -o build\IME-Keys-for-US-0.1.4-x64.msi
 ```
 
 This example produces an unsigned MSI unless `build\Release\ime-keys-for-us.exe` has already been signed. Sign the executable first when preparing a signed public MSI.
@@ -133,19 +133,19 @@ GitHub-hosted CI does not test keyboard/IME/tray-click/UIAccess integration. Tho
 Current preferred public version:
 
 ```text
-0.1.3
+0.1.4
 ```
 
 Release tag:
 
 ```text
-v0.1.3
+v0.1.4
 ```
 
 GitHub Release title:
 
 ```text
-IME Keys for US v0.1.3
+IME Keys for US v0.1.4
 ```
 
 Before packaging or uninstall testing, disable current-user startup if it was enabled:
@@ -156,8 +156,8 @@ Before packaging or uninstall testing, disable current-user startup if it was en
 
 Release process:
 
-1. Build x64 Release.
-2. Run manual tests from `docs/manual-test-checklist.md`.
+1. Run the automated Release Preflight section in `docs/manual-test-checklist.md`.
+2. Wait for the PR build to run the CI installer smoke test.
 3. Produce locally signed artifacts for the preferred public release.
 4. Compute SHA256 hashes.
 5. Draft GitHub Release with known limitations.
@@ -165,6 +165,8 @@ Release process:
 7. Attach executable zip if useful.
 8. Review before publishing.
 
-v0.1.3 distribution artifacts are signed with the local personal `CN=tsuchim` Authenticode certificate. This is not a public CA-trusted code-signing certificate.
+v0.1.4 distribution artifacts are signed with the local personal `CN=tsuchim` Authenticode certificate. This is not a public CA-trusted code-signing certificate.
+
+See `docs/release-workflow.md` for the end-to-end release branch, PR, review, tag, GitHub Release, and winget update flow.
 
 Do not publish automatically without review.
