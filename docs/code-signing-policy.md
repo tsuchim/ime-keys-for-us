@@ -33,7 +33,7 @@ Release artifacts must be built from signed Git tags in this repository.
 ## Current Release Process
 
 1. Merge the release PR into `main`.
-2. Create a signed Git tag, for example `v0.1.4`.
+2. Create a signed Git tag, for example `vX.Y.Z`.
 3. Build from the exact tag.
 4. Sign the executable and MSI.
 5. Upload the signed MSI to the GitHub Release.

@@ -5,10 +5,10 @@
 - Name: IME Keys for US
 - Repository: https://github.com/tsuchim/ime-keys-for-us
 - License: MIT
-- Current release: v0.1.4
+- Latest GitHub Release: v0.1.4
 - Distribution:
   - GitHub Releases
-  - winget package: `tsuchim.ImeKeysForUS`
+  - winget package: `tsuchim.ImeKeysForUS` (current public package: v0.1.3)
 
 ## What the App Does
 
@@ -20,7 +20,7 @@ The app does not show a main window. It runs in the notification area / system t
 
 ## Current Release State
 
-The project is already released publicly and distributed through winget.
+The project is already released publicly. GitHub Releases currently provide v0.1.4, and the winget package `tsuchim.ImeKeysForUS` is currently published as v0.1.3.
 
 Current artifacts are locally Authenticode-signed with:
 

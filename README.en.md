@@ -128,7 +128,7 @@ This log is not uploaded automatically.
 
 ## Code signing
 
-The v0.1.4 distribution `exe` and `MSI` are Authenticode-signed with a local `CN=tsuchim` code-signing certificate.
+The release distribution `exe` and `MSI` artifacts are Authenticode-signed during release with a local `CN=tsuchim` code-signing certificate.
 
 This is a personal open-source project and the certificate is not a public CA-trusted code-signing certificate. Windows SmartScreen or publisher warnings may still appear depending on the environment.
 
