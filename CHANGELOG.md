@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.4
+
+- Restored the tray icon when the Windows shell recreates the taskbar.
+- Made re-launching an already running instance request a tray icon refresh instead of silently exiting.
+- Added release preflight checks and documented the main-to-release-to-winget flow.
+
 ## 0.1.3
 
 - Linked the MSVC runtime statically for release builds.

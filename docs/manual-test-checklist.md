@@ -1,5 +1,38 @@
 # Manual Test Checklist
 
+## Release Preflight Automation
+
+Run the automated preflight script:
+
+```powershell
+scripts\Test-ReleasePreflight.ps1 -BuildDir build
+```
+
+This verifies:
+
+- [ ] `git diff --check` reports no whitespace errors.
+- [ ] CMake configure succeeds.
+- [ ] Release build succeeds.
+- [ ] Release executable exists.
+- [ ] Startup registration smoke test passes.
+- [ ] Unsigned x64 MSI builds with WiX.
+
+The PR build runs the same script with `-IncludeInstallerSmoke` on GitHub Actions. That CI-only path also verifies:
+
+- [ ] Silent MSI install succeeds.
+- [ ] Installed executable exists at `C:\Program Files\ImeKeysForUS\ime-keys-for-us.exe`.
+- [ ] MSI install does not create the current-user startup Run value.
+- [ ] Silent MSI uninstall succeeds.
+- [ ] Installed executable is removed after uninstall.
+
+Do not trigger UAC elevation from an automated agent run. If the current process is not already elevated, `scripts\Test-Installer.ps1` fails instead of asking for elevation.
+
+## Release Artifact Checks
+
+- [ ] Confirm release artifacts are signed before public release.
+- [ ] Compute SHA256 for release artifacts.
+- [ ] Confirm winget manifest version, URLs, hashes, schema, and `ManifestVersion` match the release.
+
 ## Apps
 
 - [ ] Notepad
@@ -73,6 +106,12 @@
 - [ ] Exit menu works.
 - [ ] Single-instance guard works.
 - [ ] Re-launching does not create duplicate hooks.
+- [ ] Re-launching an already running app refreshes the existing tray icon instead of silently doing nothing.
+- [ ] Re-launching an already running app logs `Requesting existing instance tray refresh.`.
+- [ ] Re-launching an already running app logs `Tray icon refreshed.` from the existing instance.
+- [ ] Restarting Explorer restores the tray icon via the `TaskbarCreated` notification.
+- [ ] After tray restoration, right-clicking the tray icon still opens the menu.
+- [ ] After tray restoration, Left Alt / Right Alt IME behavior still works.
 - [ ] Fresh MSI install does not create HKCU Run value.
 - [ ] App starts manually from Start Menu.
 - [ ] Tray menu shows `Start at sign-in` unchecked initially.

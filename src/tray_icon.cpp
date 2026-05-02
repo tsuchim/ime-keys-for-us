@@ -19,6 +19,8 @@ UINT TrayIcon::MessageId() {
 }
 
 bool TrayIcon::Add(HWND hwnd) {
+  Remove();
+
   icon_ = static_cast<HICON>(
       LoadImageW(instance_, MAKEINTRESOURCEW(IDI_APP_ICON), IMAGE_ICON,
                  GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON),

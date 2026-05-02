@@ -10,6 +10,12 @@
 namespace {
 constexpr wchar_t kWindowClassName[] = L"ImeKeysForUS.HiddenWindow";
 constexpr UINT_PTR kDoubleTapTimerId = 1;
+constexpr UINT kRefreshTrayMessage = WM_APP + 101;
+
+UINT TaskbarCreatedMessageId() {
+  static UINT message = RegisterWindowMessageW(L"TaskbarCreated");
+  return message;
+}
 }  // namespace
 
 App::App(HINSTANCE instance) : instance_(instance), tray_icon_(instance) {}
@@ -36,12 +42,14 @@ bool App::Initialize() {
   }
   LogStartupEvent(L"Window class registered.");
 
-  hwnd_ = CreateWindowExW(0, kWindowClassName, L"IME Keys for US", 0, 0, 0, 0,
-                          0, HWND_MESSAGE, nullptr, instance_, this);
+  hwnd_ =
+      CreateWindowExW(WS_EX_TOOLWINDOW, kWindowClassName, L"IME Keys for US",
+                      WS_OVERLAPPED, 0, 0, 0, 0, nullptr, nullptr, instance_,
+                      this);
   if (hwnd_ == nullptr) {
     return FailStartup(L"CreateWindowExW failed.", GetLastError());
   }
-  LogStartupEvent(L"Message-only window created.");
+  LogStartupEvent(L"Hidden window created.");
 
   settings_ = LoadSettings();
   LogStartupEvent(L"Settings loaded.");
@@ -70,6 +78,14 @@ int App::Run() {
     DispatchMessageW(&message);
   }
   return static_cast<int>(message.wParam);
+}
+
+const wchar_t* App::WindowClassName() {
+  return kWindowClassName;
+}
+
+UINT App::RefreshTrayMessageId() {
+  return kRefreshTrayMessage;
 }
 
 bool App::FailStartup(const wchar_t* stage, DWORD error) {
@@ -115,6 +131,13 @@ LRESULT App::HandleMessage(HWND hwnd, UINT message, WPARAM wparam,
     return 0;
   }
 
+  UINT taskbar_created_message = TaskbarCreatedMessageId();
+  if (message == kRefreshTrayMessage ||
+      (taskbar_created_message != 0 && message == taskbar_created_message)) {
+    RefreshTrayIcon();
+    return 0;
+  }
+
   switch (message) {
     case WM_TIMER:
       if (wparam == kDoubleTapTimerId) {
@@ -143,6 +166,15 @@ LRESULT App::HandleMessage(HWND hwnd, UINT message, WPARAM wparam,
   }
 
   return DefWindowProcW(hwnd, message, wparam, lparam);
+}
+
+void App::RefreshTrayIcon() {
+  LogStartupEvent(L"Tray icon refresh attempted.");
+  if (tray_icon_.Add(hwnd_)) {
+    LogStartupEvent(L"Tray icon refreshed.");
+  } else {
+    LogLastError(L"Tray icon refresh failed.", tray_icon_.LastError());
+  }
 }
 
 void App::UpdateKeyboardTimer(HWND hwnd) {

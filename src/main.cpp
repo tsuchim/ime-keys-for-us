@@ -45,6 +45,13 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE, PWSTR command_line, int) {
                       ? L"Single-instance check passed; this is primary."
                       : L"Single-instance check found an existing instance.");
   if (!single_instance.IsPrimary()) {
+    HWND existing_window = FindWindowW(App::WindowClassName(), nullptr);
+    if (existing_window != nullptr) {
+      LogStartupEvent(L"Requesting existing instance tray refresh.");
+      PostMessageW(existing_window, App::RefreshTrayMessageId(), 0, 0);
+    } else {
+      LogStartupEvent(L"Existing instance window was not found.");
+    }
     return 0;
   }
 
