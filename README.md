@@ -112,13 +112,31 @@ MSI インストール時には自動起動を有効にしません。
 "C:\Program Files\ImeKeysForUS\ime-keys-for-us.exe" --disable-startup
 ```
 
+## プライバシー
+
+IME Keys for US は、テレメトリを収集しません。キー入力内容を記録しません。外部ネットワークへデータを送信しません。
+
+低レベルキーボードフックは、左 Alt / 右 Alt の操作をローカルで判定し、IME の ON / OFF を要求するためだけに使います。
+
+起動診断ログは、ローカル環境の次の場所にだけ保存されます。
+
+```text
+%LOCALAPPDATA%\ImeKeysForUS\ime-keys-for-us.log
+```
+
+このログは自動送信されません。
+
 ## 署名について
 
-v0.1.4 の配布用 `exe` と `MSI` は、ローカルの `CN=tsuchim` コード署名証明書で Authenticode 署名します。
+配布用の `exe` と `MSI` は、リリース時にローカルの `CN=tsuchim` コード署名証明書で Authenticode 署名します。
 
 これは個人開発の OSS として、公開 CA のコード署名証明書ではありません。そのため、環境によっては Windows SmartScreen や発行元の警告が表示される場合があります。
 
-それでも、配布 artifact が署名後に改ざんされていないことを確認できるようにするため、署名付き artifact を公開しています。将来的に winget で配布する場合は、manifest の SHA256 でも installer が検証されます。なお、このリポジトリの winget 関連ファイルは提出準備用であり、自動公開を意味するものではありません。
+それでも、配布 artifact が署名後に改ざんされていないことを確認できるようにするため、署名付き artifact を公開しています。winget では manifest の SHA256 でも installer が検証されます。
+
+SignPath Foundation に申請予定です。受理された場合、SignPath Foundation による署名は 0.1.5 以降のリリースで導入する予定です。
+
+コード署名ポリシー: [docs/code-signing-policy.md](docs/code-signing-policy.md)
 
 ## 既知の制限
 
