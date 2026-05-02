@@ -10,6 +10,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Install WiX
         run: dotnet tool install --global wix --version 4.0.6
@@ -28,5 +30,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ime-keys-for-us-installer-unsigned-x64
-          path: IME-Keys-for-US-*-x64-unsigned.msi
+          path: build/IME-Keys-for-US-*-x64-unsigned.msi
           if-no-files-found: ignore

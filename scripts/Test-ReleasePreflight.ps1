@@ -8,9 +8,26 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $repo = Resolve-Path (Join-Path $PSScriptRoot '..')
+
+function Invoke-Native {
+  param(
+    [Parameter(Mandatory = $true)][string]$FilePath,
+    [string[]]$Arguments = @()
+  )
+
+  & $FilePath @Arguments
+  if ($LASTEXITCODE -ne 0) {
+    throw "$FilePath $($Arguments -join ' ') failed with exit code $LASTEXITCODE."
+  }
+}
+
 Push-Location $repo
 try {
-  git diff --check
+  $diffArgs = @('diff', '--check')
+  if ($env:GITHUB_BASE_REF) {
+    $diffArgs += "origin/$env:GITHUB_BASE_REF...HEAD"
+  }
+  Invoke-Native -FilePath git -Arguments $diffArgs
 
   $configureArgs = @('-S', '.', '-B', $BuildDir)
   if ($Generator) {
@@ -19,8 +36,8 @@ try {
   if ($Architecture) {
     $configureArgs += @('-A', $Architecture)
   }
-  cmake @configureArgs
-  cmake --build $BuildDir --config Release
+  Invoke-Native -FilePath cmake -Arguments $configureArgs
+  Invoke-Native -FilePath cmake -Arguments @('--build', $BuildDir, '--config', 'Release')
 
   $exe = Get-ChildItem $BuildDir -Recurse -Filter ime-keys-for-us.exe |
       Where-Object { $_.FullName -match '\\Release\\' } |
@@ -49,10 +66,18 @@ try {
   }
 
   $msi = Join-Path $BuildDir "IME-Keys-for-US-$version-x64-unsigned.msi"
-  & $wix build installer\wix\Product.wxs -arch x64 -d SourceDir=$($exe.Directory.FullName) -d ProductVersion=$version -o $msi
-  if ($LASTEXITCODE -ne 0) {
-    throw "wix build failed with exit code $LASTEXITCODE."
-  }
+  Invoke-Native -FilePath $wix -Arguments @(
+    'build',
+    'installer\wix\Product.wxs',
+    '-arch',
+    'x64',
+    '-d',
+    "SourceDir=$($exe.Directory.FullName)",
+    '-d',
+    "ProductVersion=$version",
+    '-o',
+    $msi
+  )
 
   if ($IncludeInstallerSmoke) {
     & (Join-Path $PSScriptRoot 'Test-Installer.ps1') -MsiPath $msi

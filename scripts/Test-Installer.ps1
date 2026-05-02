@@ -28,18 +28,34 @@ function Invoke-Msi {
   }
 }
 
+$installSucceeded = $false
+$primaryError = $null
+
 try {
   Get-Process -Name ime-keys-for-us -ErrorAction SilentlyContinue | Stop-Process -Force
 
   Invoke-Msi @('/i', $msi.FullName, '/qn', '/norestart')
+  $installSucceeded = $true
   if (-not (Test-Path $installedExe)) {
     throw "Installed executable was not found at $installedExe."
   }
   if (Get-ItemProperty -Path $runPath -Name ImeKeysForUS -ErrorAction SilentlyContinue) {
     throw 'MSI install should not create the current-user startup Run value.'
   }
+} catch {
+  $primaryError = $_
+  throw
 } finally {
-  Invoke-Msi @('/x', $msi.FullName, '/qn', '/norestart')
+  if ($installSucceeded) {
+    try {
+      Invoke-Msi @('/x', $msi.FullName, '/qn', '/norestart')
+    } catch {
+      if ($null -eq $primaryError) {
+        throw
+      }
+      Write-Warning "MSI cleanup failed after an earlier failure: $($_.Exception.Message)"
+    }
+  }
 }
 
 if (Test-Path $installedExe) {

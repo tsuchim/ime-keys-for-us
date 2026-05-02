@@ -1,0 +1,27 @@
+# Incomplete winget manifest template. Replace TODO values after the GitHub Release exists.
+# ProductCode must be read from the exact MSI submitted to winget.
+# UpgradeCode is fixed by installer/wix/Product.wxs.
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.installer.1.12.0.schema.json
+PackageIdentifier: tsuchim.ImeKeysForUS
+PackageVersion: X.Y.Z
+InstallerType: wix
+Scope: machine
+InstallModes:
+  - interactive
+  - silent
+  - silentWithProgress
+UpgradeBehavior: install
+ReleaseDate: YYYY-MM-DD
+AppsAndFeaturesEntries:
+  - DisplayName: IME Keys for US
+    Publisher: tsuchim
+    DisplayVersion: X.Y.Z
+    ProductCode: "{TODO-PRODUCT-CODE-FROM-MSI}"
+    UpgradeCode: "{C79D216B-8E33-45BF-976B-F52825D3A8E6}"
+    InstallerType: wix
+Installers:
+  - Architecture: x64
+    InstallerUrl: https://github.com/tsuchim/ime-keys-for-us/releases/download/vX.Y.Z/IME-Keys-for-US-X.Y.Z-x64.msi
+    InstallerSha256: TODO
+ManifestType: installer
+ManifestVersion: 1.12.0

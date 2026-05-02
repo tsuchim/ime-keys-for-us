@@ -74,21 +74,28 @@ Use this project flow:
 1. Confirm the GitHub Release has the signed MSI that should be installed by winget.
 2. Copy the stable GitHub Release MSI URL.
 3. Compute the signed MSI SHA256.
-4. Generate or update the winget manifest for `tsuchim.ImeKeysForUS`.
-5. Validate locally:
+4. Read the MSI `ProductCode` and `UpgradeCode`:
+
+```powershell
+scripts\Get-MsiMetadata.ps1 -MsiPath path\to\IME-Keys-for-US-X.Y.Z-x64.msi
+```
+
+5. Generate or update the winget manifest for `tsuchim.ImeKeysForUS`.
+6. Include `AppsAndFeaturesEntries` with the exact MSI `ProductCode` and stable `UpgradeCode`.
+7. Validate locally:
 
 ```powershell
 winget validate <manifest-folder>
 ```
 
-6. Add the manifest to `microsoft/winget-pkgs` under:
+8. Add the manifest to `microsoft/winget-pkgs` under:
 
 ```text
 manifests/t/tsuchim/ImeKeysForUS/X.Y.Z/
 ```
 
-7. Open a PR to `microsoft/winget-pkgs`.
-8. Wait for automated validation and moderator review.
-9. Address each validation failure or review comment individually.
+9. Open a PR to `microsoft/winget-pkgs`.
+10. Wait for automated validation and moderator review.
+11. Address each validation failure or review comment individually.
 
 Do not file the winget PR before the GitHub Release exists and the signed MSI URL and hash are final.
