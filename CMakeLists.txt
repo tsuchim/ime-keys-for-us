@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(ImeKeysForUS VERSION 0.1.3 LANGUAGES CXX RC)
+project(ImeKeysForUS VERSION 0.1.4 LANGUAGES CXX RC)
 
 set(IME_KEYS_VERSION_4 "${PROJECT_VERSION}.0")
 
