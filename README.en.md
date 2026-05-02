@@ -112,20 +112,38 @@ To disable:
 "C:\Program Files\ImeKeysForUS\ime-keys-for-us.exe" --disable-startup
 ```
 
+## Privacy
+
+IME Keys for US does not collect telemetry, does not record keystroke contents, and does not send data to any network service.
+
+The low-level keyboard hook is used only to detect Left Alt / Right Alt gestures locally and request IME ON/OFF behavior.
+
+Startup diagnostics are written only to the local machine:
+
+```text
+%LOCALAPPDATA%\ImeKeysForUS\ime-keys-for-us.log
+```
+
+This log is not uploaded automatically.
+
 ## Code signing
 
-The v0.1.3 distribution `exe` and `MSI` are Authenticode-signed with a local `CN=tsuchim` code-signing certificate.
+The v0.1.4 distribution `exe` and `MSI` are Authenticode-signed with a local `CN=tsuchim` code-signing certificate.
 
 This is a personal open-source project and the certificate is not a public CA-trusted code-signing certificate. Windows SmartScreen or publisher warnings may still appear depending on the environment.
 
-The signature is provided so users can verify that the distributed artifacts have not been modified after signing. If/when the app is distributed through winget, the installer is also verified by the SHA256 hash in the manifest. Winget submission/publication is manual and may not be available at all times.
+The signature is provided so users can verify that the distributed artifacts have not been modified after signing. In winget, the installer is also verified by the SHA256 hash in the manifest.
+
+The project intends to apply for SignPath Foundation open-source code signing. If accepted, SignPath Foundation signing is planned for releases `0.1.5` and later.
+
+Code signing policy: [docs/code-signing-policy.md](docs/code-signing-policy.md)
 
 ## Known Limitations
 
 - IME control uses IMM first and may not work perfectly with every IME/application combination.
 - TSF support is not implemented yet.
 - Elevated application support requires future UIAccess signed-build validation.
-- CI artifacts may be unsigned. The preferred v0.1.3 distribution artifacts are locally signed.
+- CI artifacts may be unsigned. The preferred v0.1.4 distribution artifacts are locally signed.
 - Microsoft Store distribution is out of scope for v0.1.x.
 - Right Alt may behave differently on layouts that treat it as AltGr.
 - There is no settings UI yet.

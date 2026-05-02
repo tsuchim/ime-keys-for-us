@@ -112,20 +112,38 @@ MSI インストール時には自動起動を有効にしません。
 "C:\Program Files\ImeKeysForUS\ime-keys-for-us.exe" --disable-startup
 ```
 
+## プライバシー
+
+IME Keys for US は、テレメトリを収集しません。キー入力内容を記録しません。外部ネットワークへデータを送信しません。
+
+低レベルキーボードフックは、左 Alt / 右 Alt の操作をローカルで判定し、IME の ON / OFF を要求するためだけに使います。
+
+起動診断ログは、ローカル環境の次の場所にだけ保存されます。
+
+```text
+%LOCALAPPDATA%\ImeKeysForUS\ime-keys-for-us.log
+```
+
+このログは自動送信されません。
+
 ## 署名について
 
-v0.1.3 の配布用 `exe` と `MSI` は、ローカルの `CN=tsuchim` コード署名証明書で Authenticode 署名しています。
+v0.1.4 の配布用 `exe` と `MSI` は、ローカルの `CN=tsuchim` コード署名証明書で Authenticode 署名しています。
 
 これは個人開発の OSS として、公開 CA のコード署名証明書ではありません。そのため、環境によっては Windows SmartScreen や発行元の警告が表示される場合があります。
 
-それでも、配布 artifact が署名後に改ざんされていないことを確認できるようにするため、署名付き artifact を公開しています。将来的に winget で配布する場合は、manifest の SHA256 でも installer が検証されます。なお、このリポジトリの winget 関連ファイルは提出準備用であり、自動公開を意味するものではありません。
+それでも、配布 artifact が署名後に改ざんされていないことを確認できるようにするため、署名付き artifact を公開しています。winget では manifest の SHA256 でも installer が検証されます。
+
+SignPath Foundation に申請予定です。受理された場合、SignPath Foundation による署名は 0.1.5 以降のリリースで導入する予定です。
+
+Code signing policy: [docs/code-signing-policy.md](docs/code-signing-policy.md)
 
 ## 既知の制限
 
 - IME 制御は IMM ベースです。IME やアプリの組み合わせによっては完全に動かない場合があります。
 - TSF 対応はまだありません。
 - 管理者権限で起動したアプリ上で使うには、将来的に UIAccess 署名ビルドの検証が必要です。
-- CI で作られる成果物は unsigned の場合があります。v0.1.3 の推奨配布物はローカルで署名した artifact です。
+- CI で作られる成果物は unsigned の場合があります。v0.1.4 の推奨配布物はローカルで署名した artifact です。
 - Microsoft Store 配布は v0.1.x の対象外です。
 - Right Alt は、AltGr として扱われるキーボードレイアウトでは挙動が異なる可能性があります。
 - 設定 UI はまだありません。
