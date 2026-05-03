@@ -1,6 +1,6 @@
 # Installer
 
-v0.1.5 uses WiX-based installer packaging. The installer is expected to:
+v0.1.6 uses WiX-based installer packaging. The installer is expected to:
 
 - Install to `C:\Program Files\ImeKeysForUS\`.
 - Install `ime-keys-for-us.exe`.

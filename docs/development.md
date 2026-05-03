@@ -36,7 +36,7 @@ WiX v4.0.6 is used in CI.
 Local MSI build example:
 
 ```powershell
-build\wix4\wix.exe build installer\wix\Product.wxs -arch x64 -d SourceDir=build\Release -d ProductVersion=0.1.5 -o build\IME-Keys-for-US-0.1.5-x64.msi
+build\wix4\wix.exe build installer\wix\Product.wxs -arch x64 -d SourceDir=build\Release -d ProductVersion=0.1.6 -o build\IME-Keys-for-US-0.1.6-x64.msi
 ```
 
 This example produces an unsigned MSI unless `build\Release\ime-keys-for-us.exe` has already been signed. Sign the executable first when preparing a signed public MSI.
@@ -133,19 +133,19 @@ GitHub-hosted CI does not test keyboard/IME/tray-click/UIAccess integration. Tho
 Current preferred public version:
 
 ```text
-0.1.5
+0.1.6
 ```
 
 Release tag:
 
 ```text
-v0.1.5
+v0.1.6
 ```
 
 GitHub Release title:
 
 ```text
-IME Keys for US v0.1.5
+IME Keys for US v0.1.6
 ```
 
 Before packaging or uninstall testing, disable current-user startup if it was enabled:
@@ -165,7 +165,7 @@ Release process:
 7. Attach executable zip if useful.
 8. Review before publishing.
 
-v0.1.5 distribution artifacts are signed with the local personal `CN=tsuchim` Authenticode certificate. This is not a public CA-trusted code-signing certificate.
+v0.1.6 distribution artifacts are signed with the local personal `CN=tsuchim` Authenticode certificate. This is not a public CA-trusted code-signing certificate.
 
 See `docs/release-workflow.md` for the end-to-end release branch, PR, review, tag, GitHub Release, and winget update flow.
 

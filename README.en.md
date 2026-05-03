@@ -143,7 +143,7 @@ Code signing policy: [docs/code-signing-policy.md](docs/code-signing-policy.md)
 - IME control uses IMM first and may not work perfectly with every IME/application combination.
 - TSF support is not implemented yet.
 - Elevated application support requires future UIAccess signed-build validation.
-- CI artifacts may be unsigned. The preferred v0.1.5 distribution artifacts are locally signed.
+- CI artifacts may be unsigned. The preferred v0.1.6 distribution artifacts are locally signed.
 - Microsoft Store distribution is out of scope for v0.1.x.
 - Right Alt may behave differently on layouts that treat it as AltGr.
 - There is no settings UI yet.

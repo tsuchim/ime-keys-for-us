@@ -1,10 +1,16 @@
 # Changelog
 
+## 0.1.6
+
+- Released the `DoubleTapMs` parser and Start Menu icon changes after Copilot review follow-up.
+- Used the Windows `USER_TIMER_MAXIMUM` constant for the `DoubleTapMs` parser safety limit.
+
 ## 0.1.5
 
 - Removed arbitrary lower and upper bounds from the `DoubleTapMs` setting while keeping parser safety checks.
 - Added an explicit Start Menu shortcut icon in the MSI.
 - Clarified settings documentation so timer precision limits are not presented as app-defined value limits.
+- The `v0.1.5` release workflow was canceled before publication because a Copilot review comment arrived after merge. Use `v0.1.6` instead.
 
 ## 0.1.4
 
