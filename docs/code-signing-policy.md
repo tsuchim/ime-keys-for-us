@@ -41,7 +41,7 @@ Release artifacts must be built from signed Git tags in this repository.
 
 ## Future SignPath Release Process
 
-SignPath Foundation signing is intended for `0.1.5` and later releases, after the application is accepted and the signing workflow is integrated.
+SignPath Foundation signing is intended for a future release after the application is accepted and the signing workflow is integrated.
 
 Once SignPath integration is available:
 

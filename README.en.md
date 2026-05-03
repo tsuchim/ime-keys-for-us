@@ -92,7 +92,7 @@ Example:
 DoubleTapMs=100
 ```
 
-The default is `100 ms`, clamped to `100-500 ms`. Restart the app after editing settings in v0.1.x.
+The default is `100 ms`. `DoubleTapMs` is loaded as a positive integer number of milliseconds. `0`, negative values, non-numeric values, and values too large to handle safely use the default. Restart the app after editing settings in v0.1.x.
 
 ## Start at Sign-in
 
@@ -134,7 +134,7 @@ This is a personal open-source project and the certificate is not a public CA-tr
 
 The signature is provided so users can verify that the distributed artifacts have not been modified after signing. In winget, the installer is also verified by the SHA256 hash in the manifest.
 
-The project intends to apply for SignPath Foundation open-source code signing. If accepted, SignPath Foundation signing is planned for releases `0.1.5` and later.
+The project has applied for SignPath Foundation open-source code signing and is waiting for a response. If accepted, SignPath Foundation signing is planned for a future release after the signing workflow is integrated.
 
 Code signing policy: [docs/code-signing-policy.md](docs/code-signing-policy.md)
 
@@ -143,7 +143,7 @@ Code signing policy: [docs/code-signing-policy.md](docs/code-signing-policy.md)
 - IME control uses IMM first and may not work perfectly with every IME/application combination.
 - TSF support is not implemented yet.
 - Elevated application support requires future UIAccess signed-build validation.
-- CI artifacts may be unsigned. The preferred v0.1.4 distribution artifacts are locally signed.
+- CI artifacts may be unsigned. The preferred v0.1.5 distribution artifacts are locally signed.
 - Microsoft Store distribution is out of scope for v0.1.x.
 - Right Alt may behave differently on layouts that treat it as AltGr.
 - There is no settings UI yet.

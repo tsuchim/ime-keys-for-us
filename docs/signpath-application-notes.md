@@ -5,10 +5,10 @@
 - Name: IME Keys for US
 - Repository: https://github.com/tsuchim/ime-keys-for-us
 - License: MIT
-- Latest GitHub Release: v0.1.4
+- Latest GitHub Release: v0.1.5
 - Distribution:
   - GitHub Releases
-  - winget package: `tsuchim.ImeKeysForUS` (current public package: v0.1.3)
+  - winget package: `tsuchim.ImeKeysForUS`
 
 ## What the App Does
 
@@ -20,7 +20,7 @@ The app does not show a main window. It runs in the notification area / system t
 
 ## Current Release State
 
-The project is already released publicly. GitHub Releases currently provide v0.1.4, and the winget package `tsuchim.ImeKeysForUS` is currently published as v0.1.3.
+The project is already released publicly. GitHub Releases currently provide v0.1.5.
 
 Current artifacts are locally Authenticode-signed with:
 
@@ -47,7 +47,7 @@ SignPath Foundation signing would allow the project to publish signed artifacts 
 
 ## Intended Integration
 
-SignPath Foundation signing is intended for `0.1.5` and later releases. The intended future release flow is:
+SignPath Foundation signing is intended for a future release after the application is accepted and the signing workflow is integrated. The intended future release flow is:
 
 1. A signed tag is pushed.
 2. GitHub Actions builds unsigned MSI artifacts on GitHub-hosted Windows runners.

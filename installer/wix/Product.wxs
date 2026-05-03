@@ -9,6 +9,7 @@
 
     <MajorUpgrade DowngradeErrorMessage="A newer version of IME Keys for US is already installed." />
     <MediaTemplate EmbedCab="yes" />
+    <Icon Id="AppIcon.ico" SourceFile="src\app.ico" />
 
     <Feature Id="Main" Title="IME Keys for US" Level="1">
       <ComponentGroupRef Id="AppComponents" />
@@ -32,6 +33,7 @@
                   Directory="ApplicationProgramsFolder"
                   Name="IME Keys for US"
                   WorkingDirectory="INSTALLFOLDER"
+                  Icon="AppIcon.ico"
                   Advertise="yes" />
       </Component>
     </ComponentGroup>

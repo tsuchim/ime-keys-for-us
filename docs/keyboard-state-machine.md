@@ -4,8 +4,6 @@ The double-tap timeout setting is loaded at startup:
 
 ```cpp
 DEFAULT_ALT_DOUBLE_TAP_MS = 100
-MIN_ALT_DOUBLE_TAP_MS = 100
-MAX_ALT_DOUBLE_TAP_MS = 500
 ```
 
 The user-facing setting is:
