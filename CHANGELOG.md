@@ -3,7 +3,7 @@
 ## 0.1.6
 
 - Released the `DoubleTapMs` parser and Start Menu icon changes after Copilot review follow-up.
-- Use the Windows `USER_TIMER_MAXIMUM` constant for the `DoubleTapMs` parser safety limit.
+- Used the Windows `USER_TIMER_MAXIMUM` constant for the `DoubleTapMs` parser safety limit.
 
 ## 0.1.5
 
