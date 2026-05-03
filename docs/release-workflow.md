@@ -44,8 +44,10 @@ Before merge, record the review gate evidence in the work log or final report:
 
 ```powershell
 gh pr view <PR_NUMBER> --json latestReviews,reviewDecision,mergeStateStatus,statusCheckRollup,url
-gh api graphql -F owner=tsuchim -F name=ime-keys-for-us -F number=<PR_NUMBER> -f query='query($owner:String!,$name:String!,$number:Int!){ repository(owner:$owner,name:$name){ pullRequest(number:$number){ reviewThreads(first:100){ nodes{ id isResolved isOutdated path line comments(first:10){ nodes{ author{login} body createdAt } } } } } } }'
+gh api graphql -F owner=tsuchim -F name=ime-keys-for-us -F number=<PR_NUMBER> -f query='query($owner:String!,$name:String!,$number:Int!){ repository(owner:$owner,name:$name){ pullRequest(number:$number){ reviewThreads(first:100){ totalCount pageInfo{ hasNextPage endCursor } nodes{ id isResolved isOutdated path line comments(first:50){ totalCount pageInfo{ hasNextPage endCursor } nodes{ author{login} body createdAt } } } } } } }'
 ```
+
+This GraphQL query returns one page. If `reviewThreads.totalCount` is greater than the returned node count, `reviewThreads.pageInfo.hasNextPage` is `true`, any thread's `comments.totalCount` is greater than the returned comment count, or any thread's `comments.pageInfo.hasNextPage` is `true`, continue paginating before deciding that all review feedback has been inspected.
 
 The merge gate is closed unless:
 
@@ -128,5 +130,5 @@ For winget PRs, use the same thread-aware review check:
 
 ```powershell
 gh pr view <PR_NUMBER> --repo microsoft/winget-pkgs --json latestReviews,reviews,mergeStateStatus,statusCheckRollup,url
-gh api graphql -F owner=microsoft -F name=winget-pkgs -F number=<PR_NUMBER> -f query='query($owner:String!,$name:String!,$number:Int!){ repository(owner:$owner,name:$name){ pullRequest(number:$number){ reviewThreads(first:100){ nodes{ id isResolved isOutdated path line comments(first:10){ nodes{ author{login} body createdAt } } } } } } }'
+gh api graphql -F owner=microsoft -F name=winget-pkgs -F number=<PR_NUMBER> -f query='query($owner:String!,$name:String!,$number:Int!){ repository(owner:$owner,name:$name){ pullRequest(number:$number){ reviewThreads(first:100){ totalCount pageInfo{ hasNextPage endCursor } nodes{ id isResolved isOutdated path line comments(first:50){ totalCount pageInfo{ hasNextPage endCursor } nodes{ author{login} body createdAt } } } } } } }'
 ```

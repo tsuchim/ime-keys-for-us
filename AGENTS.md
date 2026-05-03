@@ -41,7 +41,9 @@ Use thread-aware checks before guarded actions. At minimum, inspect:
 
 ```powershell
 gh pr view <number> --json latestReviews,reviewDecision,mergeStateStatus,statusCheckRollup,url
-gh api graphql -F owner=<owner> -F name=<repo> -F number=<number> -f query='query($owner:String!,$name:String!,$number:Int!){ repository(owner:$owner,name:$name){ pullRequest(number:$number){ reviewThreads(first:100){ nodes{ id isResolved isOutdated path line comments(first:10){ nodes{ author{login} body createdAt } } } } } } }'
+gh api graphql -F owner=<owner> -F name=<repo> -F number=<number> -f query='query($owner:String!,$name:String!,$number:Int!){ repository(owner:$owner,name:$name){ pullRequest(number:$number){ reviewThreads(first:100){ totalCount pageInfo{ hasNextPage endCursor } nodes{ id isResolved isOutdated path line comments(first:50){ totalCount pageInfo{ hasNextPage endCursor } nodes{ author{login} body createdAt } } } } } } }'
 ```
+
+The query above is a first page, not proof that the PR has only that many review threads or comments. If `reviewThreads.totalCount` is greater than the returned node count, `reviewThreads.pageInfo.hasNextPage` is `true`, any thread's `comments.totalCount` is greater than the returned comment count, or any thread's `comments.pageInfo.hasNextPage` is `true`, paginate until every thread and comment has been inspected.
 
 For `microsoft/winget-pkgs` PRs, run the same thread-aware review check against `owner=microsoft` and `name=winget-pkgs`.
