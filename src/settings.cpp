@@ -9,7 +9,7 @@
 namespace {
 constexpr wchar_t kSettingsDirectory[] = L"ImeKeysForUS";
 constexpr wchar_t kSettingsFile[] = L"settings.ini";
-constexpr DWORD kMaxSafeDoubleTapMs = 0x7fffffff;
+constexpr DWORD kMaxSafeDoubleTapMs = USER_TIMER_MAXIMUM;
 
 bool GetSettingsPath(wchar_t* path, DWORD path_count) {
   PWSTR appdata = nullptr;
