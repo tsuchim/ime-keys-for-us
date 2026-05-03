@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.5
+
+- Removed arbitrary lower and upper bounds from the `DoubleTapMs` setting while keeping parser safety checks.
+- Added an explicit Start Menu shortcut icon in the MSI.
+- Clarified settings documentation so timer precision limits are not presented as app-defined value limits.
+
 ## 0.1.4
 
 - Restored the tray icon when the Windows shell recreates the taskbar.

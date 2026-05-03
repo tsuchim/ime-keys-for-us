@@ -113,7 +113,7 @@ The timeout is configurable without recompiling:
 DoubleTapMs=100
 ```
 
-Accepted values are clamped to `100-500 ms`. Restart is required after editing settings in v0.1.0.
+The default is `100 ms`. `DoubleTapMs` is loaded as a positive integer number of milliseconds. `0`, negative values, non-numeric values, and values too large to handle safely use the default. Restart is required after editing settings in v0.1.x.
 
 ## IME Control
 

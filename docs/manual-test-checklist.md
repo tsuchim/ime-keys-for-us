@@ -71,10 +71,13 @@ Do not trigger UAC elevation from an automated agent run. If the current process
 - [ ] No settings file uses default `100`.
 - [ ] Missing `DoubleTapMs` uses default `100`.
 - [ ] Invalid `DoubleTapMs` uses default `100`.
+- [ ] `DoubleTapMs=0` uses default `100`.
+- [ ] Negative `DoubleTapMs` uses default `100`.
+- [ ] `DoubleTapMs=10` is accepted.
 - [ ] `DoubleTapMs=100` works.
 - [ ] `DoubleTapMs=500` works.
-- [ ] Values below `100` clamp to `100`.
-- [ ] Values above `500` clamp to `500`.
+- [ ] `DoubleTapMs=1000` is accepted.
+- [ ] Values above `2147483647` use default `100`.
 - [ ] Restart is required after changing settings.
 
 ## Normal Alt Shortcuts

@@ -51,7 +51,7 @@ Settings are loaded once at startup from:
 DoubleTapMs=100
 ```
 
-The default is `100 ms`, clamped to `100-500 ms`. Restart is required after editing settings in v0.1.0.
+The default is `100 ms`. `DoubleTapMs` is loaded as a positive integer number of milliseconds. `0`, negative values, non-numeric values, and values too large to handle safely use the default. Restart is required after editing settings in v0.1.x.
 
 ## Startup Order
 

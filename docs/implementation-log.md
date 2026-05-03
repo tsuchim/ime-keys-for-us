@@ -88,8 +88,6 @@ CMake project と Win32 source layout を作成した。
 
 ```cpp
 constexpr DWORD DEFAULT_ALT_DOUBLE_TAP_MS = 100;
-constexpr DWORD MIN_ALT_DOUBLE_TAP_MS = 100;
-constexpr DWORD MAX_ALT_DOUBLE_TAP_MS = 500;
 ```
 
 `DoubleTapMs` は `%APPDATA%\ImeKeysForUS\settings.ini` から起動時に読み込む。
@@ -308,7 +306,7 @@ Applied changes:
 - Added `src/settings.h` and `src/settings.cpp`.
 - Added `AppSettings` and startup loading from `%APPDATA%\ImeKeysForUS\settings.ini`.
 - Changed `DEFAULT_ALT_DOUBLE_TAP_MS` to `100`.
-- Added accepted setting clamp range `100-500 ms`.
+- Initially added an accepted setting clamp range. This was later removed in section 21.
 - Changed timer handling so the app arms a timer only while a pending tap exists.
 - Changed `DoubleTapMs` parsing to accept only strict numeric values; invalid values use the default.
 - Changed first Alt tap to create a pending tap instead of immediately changing IME.
@@ -343,3 +341,9 @@ Applied changes:
 - Verified `--enable-startup` creates the HKCU Run value.
 - Verified `--disable-startup` removes the HKCU Run value.
 - Kept the per-machine MSI from writing HKCU Run by default.
+
+## 21. DoubleTapMs Arbitrary Bounds Were Removed
+
+- Removed the `100 ms` lower bound and `500 ms` upper clamp from `DoubleTapMs`.
+- Positive integer millisecond values are now accepted as provided.
+- `0`, negative values, non-numeric values, and values above `2147483647` use the default `100 ms`.

@@ -9,16 +9,7 @@
 namespace {
 constexpr wchar_t kSettingsDirectory[] = L"ImeKeysForUS";
 constexpr wchar_t kSettingsFile[] = L"settings.ini";
-
-DWORD ClampDoubleTapMs(int value) {
-  if (value < static_cast<int>(MIN_ALT_DOUBLE_TAP_MS)) {
-    return MIN_ALT_DOUBLE_TAP_MS;
-  }
-  if (value > static_cast<int>(MAX_ALT_DOUBLE_TAP_MS)) {
-    return MAX_ALT_DOUBLE_TAP_MS;
-  }
-  return static_cast<DWORD>(value);
-}
+constexpr DWORD kMaxSafeDoubleTapMs = 0x7fffffff;
 
 bool GetSettingsPath(wchar_t* path, DWORD path_count) {
   PWSTR appdata = nullptr;
@@ -50,20 +41,25 @@ std::wstring Trim(const wchar_t* value) {
   return text.substr(first, last - first);
 }
 
-bool TryParseStrictInt(const std::wstring& text, int* value) {
+bool TryParseDoubleTapMs(const std::wstring& text, DWORD* value) {
   if (text.empty()) {
     return false;
   }
 
-  int parsed = 0;
+  DWORD parsed = 0;
   for (wchar_t ch : text) {
     if (ch < L'0' || ch > L'9') {
       return false;
     }
-    parsed = parsed * 10 + (ch - L'0');
-    if (parsed > 10000) {
+    DWORD digit = static_cast<DWORD>(ch - L'0');
+    if (parsed > (kMaxSafeDoubleTapMs - digit) / 10) {
       return false;
     }
+    parsed = parsed * 10 + digit;
+  }
+
+  if (parsed == 0) {
+    return false;
   }
 
   *value = parsed;
@@ -84,10 +80,10 @@ AppSettings LoadSettings() {
                                          value_text,
                                          static_cast<DWORD>(std::size(value_text)),
                                          path);
-  int value = 0;
+  DWORD value = 0;
   std::wstring trimmed = Trim(value_text);
-  if (chars > 0 && TryParseStrictInt(trimmed, &value)) {
-    settings.alt_double_tap_ms = ClampDoubleTapMs(value);
+  if (chars > 0 && TryParseDoubleTapMs(trimmed, &value)) {
+    settings.alt_double_tap_ms = value;
   }
   return settings;
 }
