@@ -1,6 +1,6 @@
 ## Summary
 
-Prepare IME Keys for US v0.1.7.
+Prepare IME Keys for US v0.1.8.
 
 ## Implemented behavior
 

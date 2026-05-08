@@ -109,7 +109,6 @@ bool KeyboardHook::HandleKeyDown(const KBDLLHOOKSTRUCT& event, AltKey key) {
     if (gesture_.state == GestureState::AltDownHeld &&
         gesture_.key != AltKey::None) {
       ClearPendingTap();
-      PostSpeculativeImeRestore(gesture_.ime_gesture_id);
       ReplayAltDown(gesture_.key);
       gesture_.state = GestureState::NormalShortcut;
     }
@@ -146,7 +145,6 @@ bool KeyboardHook::HandleKeyDown(const KBDLLHOOKSTRUCT& event, AltKey key) {
   if (gesture_.state == GestureState::AltDownHeld &&
       gesture_.key != AltKey::None && gesture_.key != key) {
     ClearPendingTap();
-    PostSpeculativeImeRestore(gesture_.ime_gesture_id);
     EmitStandaloneAlt(key);
     MarkConsumeUp(key);
     gesture_.state = GestureState::CrossFallback;

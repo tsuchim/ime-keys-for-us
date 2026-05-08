@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(ImeKeysForUS VERSION 0.1.7 LANGUAGES CXX RC)
+project(ImeKeysForUS VERSION 0.1.8 LANGUAGES CXX RC)
+
+if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+  message(FATAL_ERROR "IME Keys for US currently supports only 64-bit Windows builds.")
+endif()
 
 set(IME_KEYS_VERSION_4 "${PROJECT_VERSION}.0")
 

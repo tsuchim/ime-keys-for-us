@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.8
+
+- Enforced the current 64-bit Windows build requirement in CMake to match message packing assumptions.
+- Reduced redundant IME open-status queries during immediate Alt-release IME requests.
+- Removed no-op restore messages from Alt shortcut paths before any speculative IME set has been posted.
+
 ## 0.1.7
 
 - Request IME ON/OFF immediately after a standalone Alt key is released, instead of waiting for the double-tap timeout to expire.
