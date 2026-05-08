@@ -111,13 +111,20 @@ LRESULT CALLBACK App::WindowProc(HWND hwnd, UINT message, WPARAM wparam,
 
 LRESULT App::HandleMessage(HWND hwnd, UINT message, WPARAM wparam,
                            LPARAM lparam) {
-  if (message == WM_APP_SET_IME_OFF) {
-    ime_controller_.SetOpenStatus(false);
+  if (message == WM_APP_SPECULATIVE_IME_SET) {
+    BeginSpeculativeImeSet(ImeGestureIdFromParam(wparam),
+                           reinterpret_cast<HWND>(lparam),
+                           ImeOpenFromParam(wparam));
     return 0;
   }
 
-  if (message == WM_APP_SET_IME_ON) {
-    ime_controller_.SetOpenStatus(true);
+  if (message == WM_APP_SPECULATIVE_IME_RESTORE) {
+    RestoreSpeculativeIme(static_cast<DWORD>(wparam));
+    return 0;
+  }
+
+  if (message == WM_APP_SPECULATIVE_IME_COMMIT) {
+    CommitSpeculativeIme(static_cast<DWORD>(wparam));
     return 0;
   }
 
@@ -182,5 +189,42 @@ void App::UpdateKeyboardTimer(HWND hwnd) {
   if (keyboard_hook_.HasPendingTap()) {
     SetTimer(hwnd, kDoubleTapTimerId, keyboard_hook_.PendingTapDelayMs(),
              nullptr);
+  }
+}
+
+void App::BeginSpeculativeImeSet(DWORD gesture_id, HWND target_hwnd,
+                                 bool open) {
+  ImeController::Target target{};
+  target.hwnd = target_hwnd;
+  if (target.hwnd != nullptr) {
+    target.thread_id = GetWindowThreadProcessId(target.hwnd, &target.process_id);
+  }
+
+  SpeculativeImeState state{};
+  state.gesture_id = gesture_id;
+  state.target = target;
+  state.can_restore = ime_controller_.GetOpenStatus(target, &state.original_open);
+
+  if (state.can_restore) {
+    speculative_ime_ = state;
+  }
+  ime_controller_.SetOpenStatus(target, open);
+}
+
+void App::RestoreSpeculativeIme(DWORD gesture_id) {
+  if (speculative_ime_.gesture_id != gesture_id) {
+    return;
+  }
+
+  if (speculative_ime_.can_restore) {
+    ime_controller_.SetOpenStatus(speculative_ime_.target,
+                                  speculative_ime_.original_open);
+  }
+  speculative_ime_ = {};
+}
+
+void App::CommitSpeculativeIme(DWORD gesture_id) {
+  if (speculative_ime_.gesture_id == gesture_id) {
+    speculative_ime_ = {};
   }
 }

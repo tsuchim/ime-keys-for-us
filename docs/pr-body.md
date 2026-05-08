@@ -1,16 +1,15 @@
 ## Summary
 
-Build initial native Win32 implementation of IME Keys for US v0.1.0.
+Prepare IME Keys for US v0.1.7.
 
 ## Implemented behavior
 
-- Left Alt single tap sets IME OFF after the double-tap timeout.
-- Right Alt single tap sets IME ON after the double-tap timeout.
-- Left Alt tap, then Left Alt down within timeout, cancels IME OFF and enters normal Left Alt mode.
-- Right Alt tap, then Right Alt down within timeout, cancels IME ON and enters normal Right Alt mode.
-- Left Alt / Right Alt with another key is preserved as a normal Alt shortcut.
-- Cross Alt fallback emits standalone Alt for the second Alt key.
-- Tray menu can toggle current-user `Start at sign-in`.
+- Left Alt release requests IME OFF immediately after a standalone tap.
+- Right Alt release requests IME ON immediately after a standalone tap.
+- The app no longer waits for the double-tap timeout before requesting IME ON/OFF.
+- Same-key double-tap and Alt shortcut fallback restore the prior IME open status when it was captured successfully.
+- Left Alt / Right Alt with another key remains a normal Alt shortcut.
+- Rejected Outlook search experiments are recorded in docs, but `Shift+Space` and `VK_IME_ON` / `VK_IME_OFF` fallback paths are not part of the product implementation.
 
 ## Build
 
@@ -43,12 +42,10 @@ Build initial native Win32 implementation of IME Keys for US v0.1.0.
 - TSF support is not implemented yet.
 - UIAccess requires signing and secure installation.
 - CI artifacts may be unsigned.
-- Store distribution is not the target for v0.1.0.
-- winget submission is prepared but not automatic.
 - Right Alt may behave differently on layouts that treat it as AltGr.
 - AX keyboard layouts may need separate handling in a future release.
 - No settings UI yet.
 
 ## Release notes draft
 
-Initial native Win32 release of IME Keys for US. This release provides explicit IME OFF on Left Alt single tap and IME ON on Right Alt single tap after a configurable double-tap timeout, while preserving normal Alt shortcuts and treating the second same-key Alt press within the timeout as a request for normal Alt behavior.
+This release requests IME OFF/ON immediately after standalone Left Alt / Right Alt release, while preserving same-key double-tap and Alt shortcut fallback behavior. It also documents the rejected Outlook search-box experiments and keeps those diagnostic fallback paths out of the release build.

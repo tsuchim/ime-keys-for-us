@@ -32,6 +32,8 @@ class KeyboardHook {
   struct Gesture {
     AltKey key = AltKey::None;
     DWORD started_at = 0;
+    DWORD ime_gesture_id = 0;
+    HWND target_hwnd = nullptr;
     GestureState state = GestureState::Idle;
     bool consume_left_up = false;
     bool consume_right_up = false;
@@ -40,6 +42,7 @@ class KeyboardHook {
   struct PendingTap {
     AltKey key = AltKey::None;
     DWORD started_at = 0;
+    DWORD ime_gesture_id = 0;
   };
 
   static LRESULT CALLBACK HookProc(int code, WPARAM wparam, LPARAM lparam);
@@ -51,7 +54,7 @@ class KeyboardHook {
 
   void BeginAltGesture(AltKey key, DWORD timestamp);
   void ResetGesture();
-  void BeginPendingTap(AltKey key, DWORD timestamp);
+  void BeginPendingTap(AltKey key, DWORD timestamp, DWORD ime_gesture_id);
   void ClearPendingTap();
   void ResolveExpiredPendingTap(DWORD now);
   void NotifyPendingTapChanged();
@@ -60,7 +63,9 @@ class KeyboardHook {
   void ReplayAltDown(AltKey key);
   void ReplayAltUp(AltKey key);
   void EmitStandaloneAlt(AltKey key);
-  void PostImeRequestForTap(AltKey key);
+  void PostSpeculativeImeSet(AltKey key, DWORD gesture_id, HWND target_hwnd);
+  void PostSpeculativeImeRestore(DWORD gesture_id);
+  void PostSpeculativeImeCommit(DWORD gesture_id);
   void MarkConsumeUp(AltKey key);
   void ClearConsumeUp(AltKey key);
   bool ShouldConsumeUp(AltKey key) const;
@@ -78,4 +83,5 @@ class KeyboardHook {
   Gesture gesture_;
   PendingTap pending_tap_;
   DWORD double_tap_timeout_ms_ = 100;
+  DWORD next_ime_gesture_id_ = 1;
 };

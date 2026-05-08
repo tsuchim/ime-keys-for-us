@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.7
+
+- Request IME ON/OFF immediately after a standalone Alt key is released, instead of waiting for the double-tap timeout to expire.
+- Keep same-key double-tap and Alt shortcut fallback behavior by restoring the prior IME open status on canceled gestures when the prior state is available.
+- Recorded Outlook search-box IME experiments and rejected `Shift+Space` and `VK_IME_ON` / `VK_IME_OFF` fallback approaches for the current specification.
+
 ## 0.1.6
 
 - Released the `DoubleTapMs` parser and Start Menu icon changes after Copilot review follow-up.

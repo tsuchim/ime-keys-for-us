@@ -10,7 +10,7 @@ Use semantic versioning:
 - Minor: new user-visible behavior, new supported workflow, or meaningful installer/startup behavior changes.
 - Major: incompatible behavior or a deliberate change to core IME key semantics.
 
-For a bug fix after `0.1.5`, the next release is `0.1.6`.
+For a patch release after `0.1.6`, the next release is `0.1.7`.
 
 ## Main PR
 

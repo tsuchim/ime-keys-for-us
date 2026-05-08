@@ -26,6 +26,16 @@ class App {
                         LPARAM lparam);
   void RefreshTrayIcon();
   void UpdateKeyboardTimer(HWND hwnd);
+  void BeginSpeculativeImeSet(DWORD gesture_id, HWND target_hwnd, bool open);
+  void RestoreSpeculativeIme(DWORD gesture_id);
+  void CommitSpeculativeIme(DWORD gesture_id);
+
+  struct SpeculativeImeState {
+    DWORD gesture_id = 0;
+    ImeController::Target target{};
+    bool original_open = false;
+    bool can_restore = false;
+  };
 
   HINSTANCE instance_;
   HWND hwnd_ = nullptr;
@@ -33,4 +43,5 @@ class App {
   KeyboardHook keyboard_hook_;
   ImeController ime_controller_;
   AppSettings settings_;
+  SpeculativeImeState speculative_ime_;
 };

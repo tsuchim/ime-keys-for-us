@@ -25,6 +25,7 @@ bool HasCommandLineFlag(PWSTR command_line, const wchar_t* flag) {
   LocalFree(argv);
   return found;
 }
+
 }  // namespace
 
 int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE, PWSTR command_line, int) {

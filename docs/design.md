@@ -12,7 +12,7 @@ The app intentionally avoids toggle behavior. The user should not need to rememb
 In scope for v0.1.0:
 
 - Low-level keyboard hook.
-- Explicit IME ON/OFF by single Alt tap after the double-tap timeout.
+- Explicit IME ON/OFF by single Alt tap.
 - Normal Alt shortcut preservation.
 - Same-key second Alt press fallback for normal Alt behavior.
 - Cross Alt fallback.
@@ -25,18 +25,19 @@ In scope for v0.1.0:
 
 The low-level keyboard hook only detects keyboard gestures and performs the minimum input replay needed to preserve Alt shortcuts and fallback behavior.
 
-IME ON/OFF is not executed directly from the hook callback. When an Alt tap timeout is classified as an IME operation, `KeyboardHook` posts one of these custom messages to the hidden app window:
+IME ON/OFF is not executed directly from the hook callback. When a standalone Alt tap is released, `KeyboardHook` posts a speculative custom message to the hidden app window:
 
-- `WM_APP_SET_IME_OFF`
-- `WM_APP_SET_IME_ON`
+- `WM_APP_SPECULATIVE_IME_SET`
+- `WM_APP_SPECULATIVE_IME_RESTORE`
+- `WM_APP_SPECULATIVE_IME_COMMIT`
 
-`App::HandleMessage()` receives that message on the normal Win32 message loop and calls `ImeController::SetOpenStatus()`. This keeps synchronous IMM work, including `SendMessageW(... WM_IME_CONTROL, ...)`, out of the low-level keyboard hook path.
+`App::HandleMessage()` receives these messages on the normal Win32 message loop and calls `ImeController` to capture, set, restore, or commit IME open status for the gesture target. The set path uses IMM open-status messages, and timeout-bounded `SendMessageTimeoutW(... WM_IME_CONTROL, ...)` stays out of the low-level keyboard hook path.
 
 ## Double-tap Fallback
 
-Double-tap is implemented by treating the second same-key Alt press within the configured timeout as an explicit request for normal Alt behavior. The first tap does not change IME immediately. If the timeout expires without a second same-key Alt down, the pending tap becomes an IME request.
+Double-tap is implemented by treating the second same-key Alt press within the configured timeout as an explicit request for normal Alt behavior. The first tap changes IME state speculatively after Alt release. If the timeout expires without a second same-key Alt down, the speculative change is committed.
 
-When the second same-key Alt down arrives within the timeout, the pending IME request is canceled and that second Alt down is replayed as a normal Alt down. If the user releases it immediately, Windows sees standalone Alt. If the user presses another key while holding it, Windows sees a normal Alt shortcut. This intentionally avoids guessing ambiguous intent after the second press.
+When the second same-key Alt down arrives within the timeout, the speculative IME request is restored and that second Alt down is replayed as a normal Alt down. If the user releases it immediately, Windows sees standalone Alt. If the user presses another key while holding it, Windows sees a normal Alt shortcut. This intentionally avoids guessing ambiguous intent after the second press.
 
 If an opposite Alt gesture starts while a pending tap exists, an already-expired pending tap is resolved first. A still-active pending tap is canceled and the new physical gesture is treated independently. This avoids a delayed IME side effect while the user is starting another Alt gesture.
 
