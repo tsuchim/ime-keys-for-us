@@ -2,7 +2,6 @@
 
 ## 0.1.8
 
-- Addressed post-merge Copilot review comments from the 0.1.7 release preparation.
 - Enforced the current 64-bit Windows build requirement in CMake to match message packing assumptions.
 - Reduced redundant IME open-status queries during immediate Alt-release IME requests.
 - Removed no-op restore messages from Alt shortcut paths before any speculative IME set has been posted.
