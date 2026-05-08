@@ -109,6 +109,7 @@ bool KeyboardHook::HandleKeyDown(const KBDLLHOOKSTRUCT& event, AltKey key) {
     if (gesture_.state == GestureState::AltDownHeld &&
         gesture_.key != AltKey::None) {
       ClearPendingTap();
+      PostSpeculativeImeRestore(gesture_.ime_gesture_id);
       ReplayAltDown(gesture_.key);
       gesture_.state = GestureState::NormalShortcut;
     }
@@ -124,6 +125,7 @@ bool KeyboardHook::HandleKeyDown(const KBDLLHOOKSTRUCT& event, AltKey key) {
   if (gesture_.state == GestureState::Idle) {
     ResolveExpiredPendingTap(now);
     if (IsPendingTapSameKeyWithinTimeout(key, now)) {
+      PostSpeculativeImeRestore(pending_tap_.ime_gesture_id);
       ClearPendingTap();
       ReplayAltDown(key);
       gesture_ = {};
@@ -133,6 +135,7 @@ bool KeyboardHook::HandleKeyDown(const KBDLLHOOKSTRUCT& event, AltKey key) {
       return true;
     }
     if (HasPendingTap() && pending_tap_.key != key) {
+      PostSpeculativeImeRestore(pending_tap_.ime_gesture_id);
       ClearPendingTap();
     }
     BeginAltGesture(key, now);
@@ -143,6 +146,7 @@ bool KeyboardHook::HandleKeyDown(const KBDLLHOOKSTRUCT& event, AltKey key) {
   if (gesture_.state == GestureState::AltDownHeld &&
       gesture_.key != AltKey::None && gesture_.key != key) {
     ClearPendingTap();
+    PostSpeculativeImeRestore(gesture_.ime_gesture_id);
     EmitStandaloneAlt(key);
     MarkConsumeUp(key);
     gesture_.state = GestureState::CrossFallback;
@@ -164,7 +168,8 @@ bool KeyboardHook::HandleKeyUp(const KBDLLHOOKSTRUCT&, AltKey key) {
   if (gesture_.state == GestureState::AltDownHeld && gesture_.key == key) {
     DWORD now = GetTickCount();
     ResolveExpiredPendingTap(now);
-    BeginPendingTap(key, now);
+    PostSpeculativeImeSet(key, gesture_.ime_gesture_id, gesture_.target_hwnd);
+    BeginPendingTap(key, now, gesture_.ime_gesture_id);
     ResetGesture();
     return true;
   }
@@ -192,6 +197,11 @@ void KeyboardHook::BeginAltGesture(AltKey key, DWORD timestamp) {
   gesture_ = {};
   gesture_.key = key;
   gesture_.started_at = timestamp;
+  gesture_.ime_gesture_id = next_ime_gesture_id_++;
+  gesture_.target_hwnd = GetForegroundWindow();
+  if (next_ime_gesture_id_ == 0) {
+    next_ime_gesture_id_ = 1;
+  }
   gesture_.state = GestureState::AltDownHeld;
 }
 
@@ -199,9 +209,11 @@ void KeyboardHook::ResetGesture() {
   gesture_ = {};
 }
 
-void KeyboardHook::BeginPendingTap(AltKey key, DWORD timestamp) {
+void KeyboardHook::BeginPendingTap(AltKey key, DWORD timestamp,
+                                   DWORD ime_gesture_id) {
   pending_tap_.key = key;
   pending_tap_.started_at = timestamp;
+  pending_tap_.ime_gesture_id = ime_gesture_id;
   NotifyPendingTapChanged();
 }
 
@@ -215,9 +227,9 @@ void KeyboardHook::ClearPendingTap() {
 
 void KeyboardHook::ResolveExpiredPendingTap(DWORD now) {
   if (IsPendingTapExpired(now)) {
-    AltKey key = pending_tap_.key;
+    DWORD ime_gesture_id = pending_tap_.ime_gesture_id;
     ClearPendingTap();
-    PostImeRequestForTap(key);
+    PostSpeculativeImeCommit(ime_gesture_id);
   }
 }
 
@@ -262,15 +274,27 @@ void KeyboardHook::EmitStandaloneAlt(AltKey key) {
   ReplayAltUp(key);
 }
 
-void KeyboardHook::PostImeRequestForTap(AltKey key) {
+void KeyboardHook::PostSpeculativeImeSet(AltKey key, DWORD gesture_id,
+                                         HWND target_hwnd) {
   if (notify_window_ == nullptr) {
     return;
   }
 
-  if (key == AltKey::Left) {
-    PostMessageW(notify_window_, WM_APP_SET_IME_OFF, 0, 0);
-  } else if (key == AltKey::Right) {
-    PostMessageW(notify_window_, WM_APP_SET_IME_ON, 0, 0);
+  bool open = key == AltKey::Right;
+  PostMessageW(notify_window_, WM_APP_SPECULATIVE_IME_SET,
+               MakeImeGestureParam(gesture_id, open),
+               reinterpret_cast<LPARAM>(target_hwnd));
+}
+
+void KeyboardHook::PostSpeculativeImeRestore(DWORD gesture_id) {
+  if (notify_window_ != nullptr && gesture_id != 0) {
+    PostMessageW(notify_window_, WM_APP_SPECULATIVE_IME_RESTORE, gesture_id, 0);
+  }
+}
+
+void KeyboardHook::PostSpeculativeImeCommit(DWORD gesture_id) {
+  if (notify_window_ != nullptr && gesture_id != 0) {
+    PostMessageW(notify_window_, WM_APP_SPECULATIVE_IME_COMMIT, gesture_id, 0);
   }
 }
 
