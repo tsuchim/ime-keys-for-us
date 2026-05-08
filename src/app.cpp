@@ -205,21 +205,21 @@ void App::BeginSpeculativeImeSet(DWORD gesture_id, HWND target_hwnd,
   state.target = target;
   state.can_restore = ime_controller_.GetOpenStatus(target, &state.original_open);
 
-  if (ime_controller_.SetOpenStatus(target, open)) {
+  if (state.can_restore) {
     speculative_ime_ = state;
-  } else {
-    speculative_ime_ = {};
   }
+  ime_controller_.SetOpenStatus(target, open);
 }
 
 void App::RestoreSpeculativeIme(DWORD gesture_id) {
-  if (speculative_ime_.gesture_id != gesture_id ||
-      !speculative_ime_.can_restore) {
+  if (speculative_ime_.gesture_id != gesture_id) {
     return;
   }
 
-  ime_controller_.SetOpenStatus(speculative_ime_.target,
-                                speculative_ime_.original_open);
+  if (speculative_ime_.can_restore) {
+    ime_controller_.SetOpenStatus(speculative_ime_.target,
+                                  speculative_ime_.original_open);
+  }
   speculative_ime_ = {};
 }
 
