@@ -208,7 +208,8 @@ void App::BeginSpeculativeImeSet(DWORD gesture_id, HWND target_hwnd,
   if (state.can_restore) {
     speculative_ime_ = state;
   }
-  ime_controller_.SetOpenStatus(target, open);
+  ime_controller_.SetOpenStatus(
+      target, open, state.can_restore ? &state.original_open : nullptr);
 }
 
 void App::RestoreSpeculativeIme(DWORD gesture_id) {

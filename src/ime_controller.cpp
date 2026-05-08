@@ -68,12 +68,23 @@ bool ImeController::GetOpenStatus(const Target& target, bool* open) const {
 }
 
 bool ImeController::SetOpenStatus(const Target& target, bool open) const {
+  return SetOpenStatus(target, open, nullptr);
+}
+
+bool ImeController::SetOpenStatus(const Target& target, bool open,
+                                  const bool* known_open) const {
   if (!IsSameTarget(target)) {
     return false;
   }
 
   bool before = false;
-  bool has_before = GetOpenStatus(target, &before);
+  bool has_before = false;
+  if (known_open != nullptr) {
+    before = *known_open;
+    has_before = true;
+  } else {
+    has_before = GetOpenStatus(target, &before);
+  }
   if (has_before && before == open) {
     return true;
   }

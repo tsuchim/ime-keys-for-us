@@ -3,7 +3,7 @@
 #include <windows.h>
 
 static_assert(sizeof(WPARAM) >= 8,
-              "IME gesture message packing requires 64-bit WPARAM.");
+              "IME gesture message packing requires a 64-bit Windows build.");
 
 constexpr UINT WM_APP_SPECULATIVE_IME_SET = WM_APP + 1;
 constexpr UINT WM_APP_SPECULATIVE_IME_RESTORE = WM_APP + 2;

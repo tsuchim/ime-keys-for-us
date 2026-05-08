@@ -3,19 +3,19 @@
 Current preferred public version:
 
 ```text
-0.1.7
+0.1.8
 ```
 
 Release tag:
 
 ```text
-v0.1.7
+v0.1.8
 ```
 
 GitHub Release title:
 
 ```text
-IME Keys for US v0.1.7
+IME Keys for US v0.1.8
 ```
 
 ## Process
@@ -29,7 +29,7 @@ IME Keys for US v0.1.7
 7. Attach executable zip if useful.
 8. Review before publishing.
 
-v0.1.7 distribution artifacts are signed with the local personal `CN=tsuchim` Authenticode certificate. This is not a public CA-trusted code-signing certificate.
+v0.1.8 distribution artifacts are signed with the local personal `CN=tsuchim` Authenticode certificate. This is not a public CA-trusted code-signing certificate.
 
 See `docs/release-workflow.md` for the end-to-end release branch, PR, review, tag, GitHub Release, and winget update flow.
 
