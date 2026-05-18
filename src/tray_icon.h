@@ -11,12 +11,12 @@ class TrayIcon {
   bool Add(HWND hwnd);
   DWORD LastError() const;
   void Remove();
-  void HandleMessage(HWND hwnd, LPARAM lparam);
+  UINT HandleMessage(HWND hwnd, LPARAM lparam);
 
   static UINT MessageId();
 
  private:
-  void ShowMenu(HWND hwnd);
+  UINT ShowMenu(HWND hwnd);
 
   HINSTANCE instance_;
   NOTIFYICONDATAW nid_{};

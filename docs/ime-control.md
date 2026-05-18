@@ -1,15 +1,20 @@
 # IME Control
 
-v0.1.x originally used the Windows IMM approach:
+v0.1.x uses the Windows IMM approach:
 
-1. Get the foreground window with `GetForegroundWindow`.
-2. Get the default IME window with `ImmGetDefaultIMEWnd`.
-3. Send `WM_IME_CONTROL` with `IMC_SETOPENSTATUS`.
-4. Use `0` for OFF and `1` for ON.
+1. Capture the foreground window at the Alt gesture boundary.
+2. Resolve the foreground GUI thread's focused control with `GetGUIThreadInfo`.
+3. Prefer `GUITHREADINFO.hwndFocus` as the IME target.
+4. Fall back to the foreground window when focused HWND resolution fails.
+5. Get the default IME window with `ImmGetDefaultIMEWnd`.
+6. Send `WM_IME_CONTROL` with `IMC_SETOPENSTATUS`.
+7. Use `0` for OFF and `1` for ON.
 
 The current implementation uses the IMM open-status path. Synthetic
 `VK_IME_ON` / `VK_IME_OFF` keyboard input was tested and rejected as a product
 implementation because it did not switch IME reliably in the test environment.
+
+The design rationale is recorded in `docs/ime-control-strategy.md`.
 
 IME control is isolated in:
 

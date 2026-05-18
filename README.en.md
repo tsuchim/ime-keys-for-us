@@ -66,8 +66,8 @@ On a system with a Japanese IME, such as Microsoft IME for Japanese:
 
 | Input | Behavior |
 |---|---|
-| Left Alt single tap | IME OFF after `DoubleTapMs` |
-| Right Alt single tap | IME ON after `DoubleTapMs` |
+| Left Alt single tap | Request IME OFF when the key is released |
+| Right Alt single tap | Request IME ON when the key is released |
 | Left Alt tap, then Left Alt down within timeout | Cancel IME OFF and enter normal Left Alt mode |
 | Right Alt tap, then Right Alt down within timeout | Cancel IME ON and enter normal Right Alt mode |
 | Left Alt + another key | Normal Left Alt shortcut |
@@ -92,7 +92,7 @@ Example:
 DoubleTapMs=100
 ```
 
-The default is `100 ms`. `DoubleTapMs` is loaded as a positive integer number of milliseconds. `0`, negative values, non-numeric values, and values too large to handle safely use the default. Restart the app after editing settings in v0.1.x.
+The default is `100 ms`. `DoubleTapMs` is loaded as a positive integer number of milliseconds. `0`, negative values, non-numeric values, and values too large to handle safely use the default. `DoubleTapMs` is a cancellation / restore window for double-tap behavior, not the delay before the first IME ON/OFF request. Restart the app after editing settings in v0.1.x.
 
 ## Start at Sign-in
 
@@ -143,7 +143,7 @@ Code signing policy: [docs/code-signing-policy.md](docs/code-signing-policy.md)
 - IME control uses IMM first and may not work perfectly with every IME/application combination.
 - TSF support is not implemented yet.
 - Elevated application support requires future UIAccess signed-build validation.
-- CI artifacts may be unsigned. The preferred v0.1.8 distribution artifacts are locally signed.
+- CI artifacts may be unsigned. The preferred v0.1.9 distribution artifacts are locally signed.
 - Microsoft Store distribution is out of scope for v0.1.x.
 - Right Alt may behave differently on layouts that treat it as AltGr.
 - There is no settings UI yet.

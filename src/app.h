@@ -24,6 +24,7 @@ class App {
                                      LPARAM lparam);
   LRESULT HandleMessage(HWND hwnd, UINT message, WPARAM wparam,
                         LPARAM lparam);
+  bool HandleCommand(UINT command);
   void RefreshTrayIcon();
   void UpdateKeyboardTimer(HWND hwnd);
   void BeginSpeculativeImeSet(DWORD gesture_id, HWND target_hwnd, bool open);
