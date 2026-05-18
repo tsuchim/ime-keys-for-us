@@ -15,7 +15,5 @@ class ImeController {
   bool SetOpenStatus(bool open) const;
   bool GetOpenStatus(const Target& target, bool* open) const;
   bool SetOpenStatus(const Target& target, bool open) const;
-  bool SetOpenStatus(const Target& target, bool open,
-                     const bool* known_open) const;
   bool IsSameTarget(const Target& target) const;
 };
