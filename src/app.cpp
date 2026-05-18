@@ -1,8 +1,8 @@
 #include "app.h"
 
 #include "app_messages.h"
-#include "resource.h"
 #include "diagnostics.h"
+#include "resource.h"
 #include "startup_registration.h"
 
 #include <windowsx.h>
@@ -192,13 +192,8 @@ void App::UpdateKeyboardTimer(HWND hwnd) {
   }
 }
 
-void App::BeginSpeculativeImeSet(DWORD gesture_id, HWND target_hwnd,
-                                 bool open) {
-  ImeController::Target target{};
-  target.hwnd = target_hwnd;
-  if (target.hwnd != nullptr) {
-    target.thread_id = GetWindowThreadProcessId(target.hwnd, &target.process_id);
-  }
+void App::BeginSpeculativeImeSet(DWORD gesture_id, HWND, bool open) {
+  ImeController::Target target = ImeController::CaptureForegroundTarget();
 
   SpeculativeImeState state{};
   state.gesture_id = gesture_id;
@@ -208,8 +203,7 @@ void App::BeginSpeculativeImeSet(DWORD gesture_id, HWND target_hwnd,
   if (state.can_restore) {
     speculative_ime_ = state;
   }
-  ime_controller_.SetOpenStatus(
-      target, open, state.can_restore ? &state.original_open : nullptr);
+  ime_controller_.SetOpenStatus(target, open);
 }
 
 void App::RestoreSpeculativeIme(DWORD gesture_id) {
