@@ -196,6 +196,16 @@ it is rejected as product behavior. It must not be implemented as the current
 specification because it changes Alt from explicit ON/OFF into a toggle in
 Outlook and therefore violates the app's core semantics.
 
+## v0.1.9 Follow-up
+
+v0.1.9 fixes the Notepad and normal-control regression by resolving the focused
+HWND with `GetGUIThreadInfo(...).hwndFocus` before using the IMM control path.
+It also removes the unsafe `known_open` optimization that could skip the actual
+`IMC_SETOPENSTATUS` request.
+
+This does not change the Outlook search-box decision. `Shift+Space` and
+`VK_IME_ON` / `VK_IME_OFF` remain rejected for the current product semantics.
+
 ## Decision: reject `Shift+Space` fallback
 
 All currently considered `Shift+Space` fallback variants are rejected for the

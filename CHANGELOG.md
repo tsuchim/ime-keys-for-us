@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.9
+
+- Fixed the v0.1.8 regression where IME ON/OFF could stop working in Notepad and other normal controls.
+- Resolved the focused control with `GetGUIThreadInfo(...).hwndFocus` before calling `ImmGetDefaultIMEWnd`, with the foreground window kept as a fallback.
+- Removed the unsafe `known_open` send-skip optimization so standalone Alt requests still send `IMC_SETOPENSTATUS`.
+- Preserved the v0.1.7 behavior where standalone Left/Right Alt release requests IME OFF/ON immediately, before the double-tap timeout expires.
+- Fixed tray menu handling so the `Exit` command closes the app with a single selection instead of showing a second menu.
+
 ## 0.1.8
 
 - Enforced the current 64-bit Windows build requirement in CMake to match message packing assumptions.

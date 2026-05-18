@@ -54,9 +54,9 @@ Do not trigger UAC elevation from an automated agent run. If the current process
 
 ## IME Single Tap
 
-- [ ] Left Alt single tap waits briefly, then sets IME OFF.
-- [ ] Right Alt single tap waits briefly, then sets IME ON.
-- [ ] The delay uses `DoubleTapMs`.
+- [ ] Left Alt release immediately requests IME OFF.
+- [ ] Right Alt release immediately requests IME ON.
+- [ ] `DoubleTapMs` is a cancellation / restore window for double-tap behavior, not the delay before the first IME request.
 
 ## Double Tap
 

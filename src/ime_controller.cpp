@@ -14,6 +14,20 @@
 namespace {
 constexpr UINT kImeMessageTimeoutMs = 100;
 
+ImeController::Target MakeTarget(HWND hwnd) {
+  ImeController::Target target{};
+  if (hwnd == nullptr || !IsWindow(hwnd)) {
+    return target;
+  }
+
+  target.hwnd = hwnd;
+  target.thread_id = GetWindowThreadProcessId(target.hwnd, &target.process_id);
+  if (target.thread_id == 0) {
+    target = {};
+  }
+  return target;
+}
+
 bool SendImeControl(HWND ime_window, WPARAM command, LPARAM data,
                     DWORD_PTR* result) {
   if (result != nullptr) {
@@ -35,13 +49,29 @@ bool SendImeControl(HWND ime_window, WPARAM command, LPARAM data,
 
 }  // namespace
 
-ImeController::Target ImeController::CaptureForegroundTarget() {
-  Target target{};
-  target.hwnd = GetForegroundWindow();
-  if (target.hwnd != nullptr) {
-    target.thread_id = GetWindowThreadProcessId(target.hwnd, &target.process_id);
+ImeController::Target ImeController::CaptureTarget(HWND foreground) {
+  Target foreground_target = MakeTarget(foreground);
+  if (foreground_target.hwnd == nullptr) {
+    return foreground_target;
   }
-  return target;
+
+  GUITHREADINFO gui_thread_info{};
+  gui_thread_info.cbSize = sizeof(gui_thread_info);
+  if (GetGUIThreadInfo(foreground_target.thread_id, &gui_thread_info) &&
+      gui_thread_info.hwndFocus != nullptr &&
+      (gui_thread_info.hwndFocus == foreground ||
+       IsChild(foreground, gui_thread_info.hwndFocus))) {
+    Target focus_target = MakeTarget(gui_thread_info.hwndFocus);
+    if (focus_target.hwnd != nullptr) {
+      return focus_target;
+    }
+  }
+
+  return foreground_target;
+}
+
+ImeController::Target ImeController::CaptureForegroundTarget() {
+  return CaptureTarget(GetForegroundWindow());
 }
 
 bool ImeController::SetOpenStatus(bool open) const {
@@ -68,25 +98,8 @@ bool ImeController::GetOpenStatus(const Target& target, bool* open) const {
 }
 
 bool ImeController::SetOpenStatus(const Target& target, bool open) const {
-  return SetOpenStatus(target, open, nullptr);
-}
-
-bool ImeController::SetOpenStatus(const Target& target, bool open,
-                                  const bool* known_open) const {
   if (!IsSameTarget(target)) {
     return false;
-  }
-
-  bool before = false;
-  bool has_before = false;
-  if (known_open != nullptr) {
-    before = *known_open;
-    has_before = true;
-  } else {
-    has_before = GetOpenStatus(target, &before);
-  }
-  if (has_before && before == open) {
-    return true;
   }
 
   HWND ime_window = ImmGetDefaultIMEWnd(target.hwnd);

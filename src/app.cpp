@@ -134,7 +134,8 @@ LRESULT App::HandleMessage(HWND hwnd, UINT message, WPARAM wparam,
   }
 
   if (message == TrayIcon::MessageId()) {
-    tray_icon_.HandleMessage(hwnd_, lparam);
+    UINT command = tray_icon_.HandleMessage(hwnd_, wparam, lparam);
+    HandleCommand(command);
     return 0;
   }
 
@@ -154,16 +155,7 @@ LRESULT App::HandleMessage(HWND hwnd, UINT message, WPARAM wparam,
       }
       return 0;
     case WM_COMMAND:
-      if (LOWORD(wparam) == ID_TRAY_START_AT_SIGN_IN) {
-        if (IsStartupEnabled()) {
-          DisableStartup();
-        } else {
-          EnableStartup();
-        }
-        return 0;
-      }
-      if (LOWORD(wparam) == ID_TRAY_EXIT) {
-        PostQuitMessage(0);
+      if (HandleCommand(LOWORD(wparam))) {
         return 0;
       }
       break;
@@ -173,6 +165,24 @@ LRESULT App::HandleMessage(HWND hwnd, UINT message, WPARAM wparam,
   }
 
   return DefWindowProcW(hwnd, message, wparam, lparam);
+}
+
+bool App::HandleCommand(UINT command) {
+  if (command == ID_TRAY_START_AT_SIGN_IN) {
+    if (IsStartupEnabled()) {
+      DisableStartup();
+    } else {
+      EnableStartup();
+    }
+    return true;
+  }
+
+  if (command == ID_TRAY_EXIT) {
+    PostQuitMessage(0);
+    return true;
+  }
+
+  return false;
 }
 
 void App::RefreshTrayIcon() {
@@ -194,11 +204,7 @@ void App::UpdateKeyboardTimer(HWND hwnd) {
 
 void App::BeginSpeculativeImeSet(DWORD gesture_id, HWND target_hwnd,
                                  bool open) {
-  ImeController::Target target{};
-  target.hwnd = target_hwnd;
-  if (target.hwnd != nullptr) {
-    target.thread_id = GetWindowThreadProcessId(target.hwnd, &target.process_id);
-  }
+  ImeController::Target target = ImeController::CaptureTarget(target_hwnd);
 
   SpeculativeImeState state{};
   state.gesture_id = gesture_id;
@@ -208,8 +214,7 @@ void App::BeginSpeculativeImeSet(DWORD gesture_id, HWND target_hwnd,
   if (state.can_restore) {
     speculative_ime_ = state;
   }
-  ime_controller_.SetOpenStatus(
-      target, open, state.can_restore ? &state.original_open : nullptr);
+  ime_controller_.SetOpenStatus(target, open);
 }
 
 void App::RestoreSpeculativeIme(DWORD gesture_id) {

@@ -1,15 +1,16 @@
 ## Summary
 
-Prepare IME Keys for US v0.1.8.
+Prepare IME Keys for US v0.1.9.
 
 ## Implemented behavior
 
-- Left Alt release requests IME OFF immediately after a standalone tap.
-- Right Alt release requests IME ON immediately after a standalone tap.
-- The app no longer waits for the double-tap timeout before requesting IME ON/OFF.
-- Same-key double-tap and Alt shortcut fallback restore the prior IME open status when it was captured successfully.
-- Left Alt / Right Alt with another key remains a normal Alt shortcut.
-- Rejected Outlook search experiments are recorded in docs, but `Shift+Space` and `VK_IME_ON` / `VK_IME_OFF` fallback paths are not part of the product implementation.
+- Left Alt release still requests IME OFF immediately after a standalone tap.
+- Right Alt release still requests IME ON immediately after a standalone tap.
+- The app resolves the focused control with `GetGUIThreadInfo(...).hwndFocus` before using the IMM IME control path.
+- The app falls back to the foreground HWND when focused HWND resolution fails.
+- The unsafe `known_open` send-skip optimization is removed so explicit set requests still send `IMC_SETOPENSTATUS`.
+- The tray icon context menu handles the `Exit` command synchronously and no longer opens a second menu on right-click.
+- Rejected Outlook search experiments remain documented; `Shift+Space` and `VK_IME_ON` / `VK_IME_OFF` fallback paths are not part of the product implementation.
 
 ## Build
 
@@ -48,4 +49,4 @@ Prepare IME Keys for US v0.1.8.
 
 ## Release notes draft
 
-This release requests IME OFF/ON immediately after standalone Left Alt / Right Alt release, while preserving same-key double-tap and Alt shortcut fallback behavior. It also documents the rejected Outlook search-box experiments and keeps those diagnostic fallback paths out of the release build.
+This bug-fix release restores IME ON/OFF in Notepad and normal controls by resolving the focused HWND before IMM control and by always sending the explicit standalone Alt set request. It also fixes tray menu `Exit` selection so the app closes with one click. It preserves the v0.1.7 immediate Alt-release behavior and does not claim to fix the new Outlook search box.
