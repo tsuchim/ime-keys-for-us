@@ -134,7 +134,7 @@ LRESULT App::HandleMessage(HWND hwnd, UINT message, WPARAM wparam,
   }
 
   if (message == TrayIcon::MessageId()) {
-    UINT command = tray_icon_.HandleMessage(hwnd_, lparam);
+    UINT command = tray_icon_.HandleMessage(hwnd_, wparam, lparam);
     HandleCommand(command);
     return 0;
   }

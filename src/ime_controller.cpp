@@ -14,6 +14,20 @@
 namespace {
 constexpr UINT kImeMessageTimeoutMs = 100;
 
+ImeController::Target MakeTarget(HWND hwnd) {
+  ImeController::Target target{};
+  if (hwnd == nullptr || !IsWindow(hwnd)) {
+    return target;
+  }
+
+  target.hwnd = hwnd;
+  target.thread_id = GetWindowThreadProcessId(target.hwnd, &target.process_id);
+  if (target.thread_id == 0) {
+    target = {};
+  }
+  return target;
+}
+
 bool SendImeControl(HWND ime_window, WPARAM command, LPARAM data,
                     DWORD_PTR* result) {
   if (result != nullptr) {
@@ -36,32 +50,24 @@ bool SendImeControl(HWND ime_window, WPARAM command, LPARAM data,
 }  // namespace
 
 ImeController::Target ImeController::CaptureTarget(HWND foreground) {
-  Target target{};
-  if (foreground == nullptr || !IsWindow(foreground)) {
-    return target;
+  Target foreground_target = MakeTarget(foreground);
+  if (foreground_target.hwnd == nullptr) {
+    return foreground_target;
   }
 
-  DWORD foreground_thread_id =
-      GetWindowThreadProcessId(foreground, nullptr);
-  if (foreground_thread_id == 0) {
-    return target;
-  }
-
-  HWND ime_target = foreground;
   GUITHREADINFO gui_thread_info{};
   gui_thread_info.cbSize = sizeof(gui_thread_info);
-  if (GetGUIThreadInfo(foreground_thread_id, &gui_thread_info) &&
+  if (GetGUIThreadInfo(foreground_target.thread_id, &gui_thread_info) &&
       gui_thread_info.hwndFocus != nullptr &&
-      IsWindow(gui_thread_info.hwndFocus)) {
-    ime_target = gui_thread_info.hwndFocus;
+      (gui_thread_info.hwndFocus == foreground ||
+       IsChild(foreground, gui_thread_info.hwndFocus))) {
+    Target focus_target = MakeTarget(gui_thread_info.hwndFocus);
+    if (focus_target.hwnd != nullptr) {
+      return focus_target;
+    }
   }
 
-  target.hwnd = ime_target;
-  target.thread_id = GetWindowThreadProcessId(target.hwnd, &target.process_id);
-  if (target.thread_id == 0) {
-    target = {};
-  }
-  return target;
+  return foreground_target;
 }
 
 ImeController::Target ImeController::CaptureForegroundTarget() {

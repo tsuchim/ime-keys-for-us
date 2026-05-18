@@ -3,6 +3,8 @@
 #include "resource.h"
 #include "startup_registration.h"
 
+#include <windowsx.h>
+
 namespace {
 constexpr UINT kTrayIconId = 1;
 constexpr UINT kTrayMessage = WM_APP + 100;
@@ -64,15 +66,18 @@ void TrayIcon::Remove() {
   owns_icon_ = false;
 }
 
-UINT TrayIcon::HandleMessage(HWND hwnd, LPARAM lparam) {
+UINT TrayIcon::HandleMessage(HWND hwnd, WPARAM wparam, LPARAM lparam) {
   UINT message = LOWORD(lparam);
   if (message == WM_CONTEXTMENU || lparam == WM_CONTEXTMENU) {
-    return ShowMenu(hwnd);
+    POINT anchor{};
+    anchor.x = GET_X_LPARAM(wparam);
+    anchor.y = GET_Y_LPARAM(wparam);
+    return ShowMenu(hwnd, anchor);
   }
   return 0;
 }
 
-UINT TrayIcon::ShowMenu(HWND hwnd) {
+UINT TrayIcon::ShowMenu(HWND hwnd, POINT anchor) {
   HMENU menu = CreatePopupMenu();
   if (menu == nullptr) {
     return 0;
@@ -88,14 +93,12 @@ UINT TrayIcon::ShowMenu(HWND hwnd) {
               L"Start at sign-in");
   AppendMenuW(menu, MF_STRING, ID_TRAY_EXIT, L"Exit");
 
-  POINT cursor{};
-  GetCursorPos(&cursor);
   SetForegroundWindow(hwnd);
   UINT command =
       TrackPopupMenu(menu,
                      TPM_RETURNCMD | TPM_RIGHTBUTTON | TPM_BOTTOMALIGN |
                          TPM_LEFTALIGN,
-                     cursor.x, cursor.y, 0, hwnd, nullptr);
+                     anchor.x, anchor.y, 0, hwnd, nullptr);
   PostMessageW(hwnd, WM_NULL, 0, 0);
   DestroyMenu(menu);
   return command;

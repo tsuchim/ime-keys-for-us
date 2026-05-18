@@ -3,7 +3,7 @@
 ## 0.1.9
 
 - Fixed the v0.1.8 regression where IME ON/OFF could stop working in Notepad and other normal controls.
-- Resolve the focused control with `GetGUIThreadInfo(...).hwndFocus` before calling `ImmGetDefaultIMEWnd`, with the foreground window kept as a fallback.
+- Resolved the focused control with `GetGUIThreadInfo(...).hwndFocus` before calling `ImmGetDefaultIMEWnd`, with the foreground window kept as a fallback.
 - Removed the unsafe `known_open` send-skip optimization so standalone Alt requests still send `IMC_SETOPENSTATUS`.
 - Preserved the v0.1.7 behavior where standalone Left/Right Alt release requests IME OFF/ON immediately, before the double-tap timeout expires.
 - Fixed tray menu handling so the `Exit` command closes the app with a single selection instead of showing a second menu.
